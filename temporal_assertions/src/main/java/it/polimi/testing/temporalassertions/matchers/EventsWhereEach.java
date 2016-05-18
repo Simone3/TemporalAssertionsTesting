@@ -1,13 +1,13 @@
-package it.polimi.testing.matchers;
+package it.polimi.testing.temporalassertions.matchers;
 
 
 import org.hamcrest.Matcher;
 
-import it.polimi.testing.checks.Check;
-import it.polimi.testing.checks.CheckSubscriber;
-import it.polimi.testing.checks.Outcome;
-import it.polimi.testing.checks.Result;
-import it.polimi.testing.quantifiers.AbstractQuantifier;
+import it.polimi.testing.temporalassertions.checks.Check;
+import it.polimi.testing.temporalassertions.checks.CheckSubscriber;
+import it.polimi.testing.temporalassertions.checks.Outcome;
+import it.polimi.testing.temporalassertions.checks.Result;
+import it.polimi.testing.temporalassertions.quantifiers.AbstractQuantifier;
 import it.polimi.testing.temporalassertions.events.Event;
 
 public class EventsWhereEach extends AbstractEventDescriptor

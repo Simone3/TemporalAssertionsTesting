@@ -1,4 +1,4 @@
-package it.polimi.testing.checks;
+package it.polimi.testing.temporalassertions.checks;
 
 import java.util.ArrayList;
 import java.util.List;

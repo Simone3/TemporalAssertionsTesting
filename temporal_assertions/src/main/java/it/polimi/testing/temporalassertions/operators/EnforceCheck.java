@@ -1,7 +1,7 @@
-package it.polimi.testing.operators;
+package it.polimi.testing.temporalassertions.operators;
 
-import it.polimi.testing.checks.Check;
-import it.polimi.testing.checks.Result;
+import it.polimi.testing.temporalassertions.checks.Check;
+import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.Observable;
 import rx.Subscriber;

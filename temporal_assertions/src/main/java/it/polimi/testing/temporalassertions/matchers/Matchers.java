@@ -1,4 +1,4 @@
-package it.polimi.testing.matchers;
+package it.polimi.testing.temporalassertions.matchers;
 
 
 import android.app.Activity;

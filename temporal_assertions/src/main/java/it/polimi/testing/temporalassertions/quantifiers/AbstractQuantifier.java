@@ -1,8 +1,8 @@
-package it.polimi.testing.quantifiers;
+package it.polimi.testing.temporalassertions.quantifiers;
 
 import org.hamcrest.Matcher;
 
-import it.polimi.testing.matchers.EventsWhereEach;
+import it.polimi.testing.temporalassertions.matchers.EventsWhereEach;
 import it.polimi.testing.temporalassertions.events.Event;
 
 

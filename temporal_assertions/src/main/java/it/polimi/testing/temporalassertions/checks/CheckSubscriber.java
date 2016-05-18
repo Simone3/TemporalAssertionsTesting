@@ -1,4 +1,4 @@
-package it.polimi.testing.checks;
+package it.polimi.testing.temporalassertions.checks;
 
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.Subscriber;

@@ -1,4 +1,4 @@
-package it.polimi.testing.quantifiers;
+package it.polimi.testing.temporalassertions.quantifiers;
 
 
 public class Exactly extends AbstractQuantifier

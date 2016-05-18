@@ -1,4 +1,4 @@
-package it.polimi.testing.checks;
+package it.polimi.testing.temporalassertions.checks;
 
 public class IfAndOnlyIf extends CheckConnective
 {
