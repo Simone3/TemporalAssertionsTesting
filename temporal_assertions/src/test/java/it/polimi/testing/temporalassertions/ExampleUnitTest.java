@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertionstesting;
+package it.polimi.testing.temporalassertions;
 
 import org.junit.Test;
 
