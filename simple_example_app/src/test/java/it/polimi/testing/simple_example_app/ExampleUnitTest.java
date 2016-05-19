@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertionstesting;
+package it.polimi.testing.simple_example_app;
 
 import org.junit.Test;
 

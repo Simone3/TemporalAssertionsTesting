@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertionstesting;
+package it.polimi.testing.simple_example_app;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,10 +31,11 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        EventMonitor.getInstance().fireCustomEvent(new ActivityLifecycleEvent(RxExampleActivity.class, "onCreate"));
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_example);
+
+        EventMonitor.getInstance().initialize();
+        EventMonitor.getInstance().fireCustomEvent(new ActivityLifecycleEvent(RxExampleActivity.class, "onCreate"));
 
         if(findViewById(R.id.fragment_container)!=null)
         {
@@ -64,13 +65,13 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
 
         }
 
-
-
         resultView = (TextView) findViewById(R.id.result);
+
+        monitorAddObservablesAndChecks();
     }
 
     @Override
-    public void onFinish(boolean result)
+    public void onCountDownFinished(boolean result)
     {
         EventMonitor.getInstance().fireCustomEvent(new CallbackEvent("Fragment->Activity"));
 
@@ -84,11 +85,8 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
 
 
 
-    @Override
-    public void onStart()
+    private void monitorAddObservablesAndChecks()
     {
-        super.onStart();
-
         EventMonitor eventMonitor = EventMonitor.getInstance();
 
         Observable<TextChangeEvent> resultObservable = RxTextView.textChanges(resultView).map(new Func1<CharSequence, TextChangeEvent>()
@@ -100,7 +98,7 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
             }
         });
 
-        eventMonitor.addObservable(resultObservable);
+        eventMonitor.observe(resultObservable);
 
 
         eventMonitor.checkThat(anEventThat(isCallbackEvent("Activity->Fragment"))
@@ -114,42 +112,13 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
 
         eventMonitor.checkThat(anEventThat(isCallbackEvent("Activity->Fragment"))
                                 .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
-
-
-
-        /*eventMonitor.verify();
-
-
-        Subscriber<Event> subscriber = new Subscriber<Event>()
-        {
-            @Override
-            public void onCompleted()
-            {
-                Log.v("[---EVENT---]", "COMPLETED!");
-            }
-
-            @Override
-            public void onError(Throwable e)
-            {
-                Log.v("[---EVENT---]", "ERROR!");
-            }
-
-            @Override
-            public void onNext(Event event)
-            {
-                Log.v("[---EVENT---]", ""+event);
-            }
-        };
-        eventMonitor.setSubscriber(subscriber);*/
-
-
     }
 
     @Override
-    public void onStop()
+    public void onDestroy()
     {
-        super.onStop();
+        EventMonitor.getInstance().stopVerification();
 
-        EventMonitor.getInstance().stop();
+        super.onDestroy();
     }
 }

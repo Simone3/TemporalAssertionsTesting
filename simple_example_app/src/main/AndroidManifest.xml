@@ -1,4 +1,4 @@
-<manifest package="it.polimi.testing.temporalassertionstesting"
+<manifest package="it.polimi.testing.simple_example_app"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
@@ -8,7 +8,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 		
-		<activity android:name=".simple.RxExampleActivity">
+		<activity android:name=".RxExampleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

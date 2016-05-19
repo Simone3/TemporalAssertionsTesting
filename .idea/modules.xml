@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TemporalAssertionsTesting.iml" filepath="$PROJECT_DIR$/TemporalAssertionsTesting.iml" />
-      <module fileurl="file://$PROJECT_DIR$/simple_example_app/app.iml" filepath="$PROJECT_DIR$/simple_example_app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/simple_example_app/simple_example_app.iml" filepath="$PROJECT_DIR$/simple_example_app/simple_example_app.iml" />
       <module fileurl="file://$PROJECT_DIR$/temporal_assertions/temporal_assertions.iml" filepath="$PROJECT_DIR$/temporal_assertions/temporal_assertions.iml" />
     </modules>
   </component>

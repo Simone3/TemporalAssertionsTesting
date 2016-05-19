@@ -1,11 +1,10 @@
-package it.polimi.testing.temporalassertionstesting;
+package it.polimi.testing.simple_example_app;
 
 
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +13,11 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
-import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
 import it.polimi.testing.temporalassertions.monitor.EventMonitor;
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Func1;
 
 import static it.polimi.testing.temporalassertions.checks.Not.notTrueThat;
@@ -75,6 +72,9 @@ public class RxExampleFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_rx_example, container, false);
 
         countDownView = (TextView) view.findViewById(R.id.countdown);
+
+        monitorAddObservablesAndChecks();
+        monitorStartVerification();
 
         return view;
     }
@@ -160,7 +160,7 @@ public class RxExampleFragment extends Fragment
                 countDownView.setText("End");
                 if(listener!=null)
                 {
-                    listener.onFinish(true);
+                    listener.onCountDownFinished(true);
                 }
                 countDownStarted = false;
             }
@@ -171,7 +171,7 @@ public class RxExampleFragment extends Fragment
 
     public interface OnCountDownEnded
     {
-        void onFinish(boolean result);
+        void onCountDownFinished(boolean result);
     }
 
 
@@ -182,13 +182,8 @@ public class RxExampleFragment extends Fragment
 
 
 
-    @Override
-    public void onStart()
+    private void monitorAddObservablesAndChecks()
     {
-        super.onStart();
-
-        // TODO this is called every time the app is put in background (rebuilds observables every time)
-
         EventMonitor eventMonitor = EventMonitor.getInstance();
 
         Observable<TextChangeEvent> countDownObservable = RxTextView.textChanges(countDownView).map(new Func1<CharSequence, TextChangeEvent>()
@@ -200,7 +195,7 @@ public class RxExampleFragment extends Fragment
             }
         });
 
-        eventMonitor.addObservable(countDownObservable);
+        eventMonitor.observe(countDownObservable);
 
 
         /********* SUCCESSFUL CHECKS *********/
@@ -241,47 +236,11 @@ public class RxExampleFragment extends Fragment
 
         eventMonitor.checkThat(anEventThat(isTextChangeEventFrom(countDownView))
                 .canOnlyHappenBefore(anEventThat(isCallbackEvent("Activity->Fragment"))));
-
-
-
-
-
-
-
-        eventMonitor.verify();
-
-
-        Subscriber<Event> subscriber = new Subscriber<Event>()
-        {
-            @Override
-            public void onCompleted()
-            {
-                Log.v("[---EVENT---]", "COMPLETED!");
-            }
-
-            @Override
-            public void onError(Throwable e)
-            {
-                Log.v("[---EVENT---]", "ERROR!");
-            }
-
-            @Override
-            public void onNext(Event event)
-            {
-                Log.v("[---EVENT---]", ""+event);
-            }
-        };
-        eventMonitor.setSubscriber(subscriber);
-
-
     }
 
-    @Override
-    public void onStop()
+    private void monitorStartVerification()
     {
-        super.onStop();
-
-        EventMonitor.getInstance().stop();
+        EventMonitor.getInstance().startVerification(null, null);
     }
 }
 

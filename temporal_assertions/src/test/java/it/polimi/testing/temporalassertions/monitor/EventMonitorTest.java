@@ -26,9 +26,9 @@ public class EventMonitorTest
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
 
-        eventMonitor.addObservable(generateEvents("A", "A", "A", "A", "A"));
-        eventMonitor.addObservable(generateEvents("B", "B", "B"));
-        eventMonitor.addObservable(generateEvents("C", "C", "C", "C", "C", "C", "C"));
+        eventMonitor.observe(generateEvents("A", "A", "A", "A", "A"));
+        eventMonitor.observe(generateEvents("B", "B", "B"));
+        eventMonitor.observe(generateEvents("C", "C", "C", "C", "C", "C", "C"));
     }
 
     private void addChecks()
@@ -38,14 +38,17 @@ public class EventMonitorTest
         eventMonitor.checkThat(alwaysSuccessCheck());
         eventMonitor.checkThat(alwaysFailureCheck());
         eventMonitor.checkThat(alwaysSuccessCheck());
+        //eventMonitor.checkThat(allEventsWhereEach(isA(Event.class)).are(exactly(expectedEvents)));
     }
 
-    private void verifyChecks(int expectedResults)
+    private void startVerification(int expectedResults, int expectedEvents)
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
 
         TestSubscriber<Result> resultsTestSubscriber = new TestSubscriber<>();
-        eventMonitor.verify(resultsTestSubscriber);
+        TestSubscriber<? super Event> eventsTestSubscriber = new TestSubscriber<>();
+
+        eventMonitor.startVerification(eventsTestSubscriber, resultsTestSubscriber);
 
         resultsTestSubscriber.assertNoErrors();
         List<Result> results = resultsTestSubscriber.getOnNextEvents();
@@ -55,16 +58,6 @@ public class EventMonitorTest
         {
             assertNotNull("Result is null!", result);
         }
-    }
-
-    private void setSubscriber(int expectedEvents)
-    {
-        EventMonitor eventMonitor = EventMonitor.getInstance();
-
-        TestSubscriber<? super Event> eventsTestSubscriber = new TestSubscriber<>();
-        eventMonitor.setSubscriber(eventsTestSubscriber);
-
-        //pause();
 
         eventsTestSubscriber.assertNoErrors();
         List<? super Event> events = eventsTestSubscriber.getOnNextEvents();
@@ -77,120 +70,38 @@ public class EventMonitorTest
     }
 
     @Test
-    public void testMonitor_ObservablesChecksVerifySubscriber()
+    public void testMonitor_ObservablesChecksVerification()
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
+        eventMonitor.initialize();
 
         try
         {
             addObservables();
             addChecks();
-            verifyChecks(3);
-            setSubscriber(15);
+            startVerification(3, 15);
         }
         finally
         {
-            eventMonitor.stop();
+            eventMonitor.stopVerification();
         }
     }
 
     @Test
-    public void testMonitor_ChecksObservablesVerifySubscriber()
+    public void testMonitor_ChecksObservablesVerification()
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
+        eventMonitor.initialize();
 
         try
         {
             addChecks();
             addObservables();
-            verifyChecks(3);
-            setSubscriber(15);
+            startVerification(3, 15);
         }
         finally
         {
-            eventMonitor.stop();
-        }
-    }
-
-    @Test
-    public void testMonitor_ObservablesChecksSubscriberVerify()
-    {
-        EventMonitor eventMonitor = EventMonitor.getInstance();
-
-        try
-        {
-            addObservables();
-            addChecks();
-            setSubscriber(15);
-            verifyChecks(3);
-        }
-        finally
-        {
-            eventMonitor.stop();
-        }
-    }
-
-    @Test
-    public void testMonitor_ObservablesSubscriberChecksVerify()
-    {
-        EventMonitor eventMonitor = EventMonitor.getInstance();
-
-        try
-        {
-            addObservables();
-            setSubscriber(15);
-            addChecks();
-            verifyChecks(3);
-        }
-        finally
-        {
-            eventMonitor.stop();
-        }
-    }
-
-    @Test
-    public void testMonitor_ObservablesSubscriberObservablesSubscriberChecksVerify()
-    {
-        EventMonitor eventMonitor = EventMonitor.getInstance();
-
-        try
-        {
-            addObservables();
-            setSubscriber(15);
-            eventMonitor.addObservable(generateEvents("X", "X", "X", "X"));
-            setSubscriber(4);
-            /* TODO checks probably receive just the 4 events... */
-            addChecks();
-            verifyChecks(3);
-        }
-        finally
-        {
-            eventMonitor.stop();
-        }
-    }
-
-    @Test
-    public void testMonitor_ObservablesChecksVerifyObservablesChecksVerifySubscriber()
-    {
-        EventMonitor eventMonitor = EventMonitor.getInstance();
-
-        try
-        {
-            addObservables();
-            addChecks();
-            verifyChecks(3);
-
-            eventMonitor.addObservable(generateEvents("X", "X", "X", "X"));
-            /* TODO checks probably receive just the 4 events... */
-            eventMonitor.checkThat(alwaysFailureCheck());
-            eventMonitor.checkThat(alwaysSuccessCheck());
-            verifyChecks(2);
-
-            setSubscriber(4);
-        }
-        finally
-        {
-            eventMonitor.stop();
+            eventMonitor.stopVerification();
         }
     }
 }
