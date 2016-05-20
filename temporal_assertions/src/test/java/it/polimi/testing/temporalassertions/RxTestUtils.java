@@ -12,7 +12,6 @@ import it.polimi.testing.temporalassertions.checks.Outcome;
 import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
-import it.polimi.testing.temporalassertions.matchers.Matchers;
 import it.polimi.testing.temporalassertions.operators.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
@@ -23,8 +22,16 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 
+/**
+ * Some utilities for testing the library
+ */
 public abstract class RxTestUtils
 {
+    /**
+     * Generates "strings.length" generic events, each containing the corresponding string
+     * @param strings the strings contained by each event
+     * @return the observable of events
+     */
     public static Observable<? extends Event> generateEvents(final String... strings)
     {
         return Observable.create(new Observable.OnSubscribe<Event>()
@@ -45,21 +52,41 @@ public abstract class RxTestUtils
         });
     }
 
+    /**
+     * Matcher used with generateEvents() to match an event with the given string
+     * @param string the event string
+     * @return the Hamcrest matcher
+     */
     public static Matcher<GenericEvent> is(String string)
     {
-        return Matchers.isGenericEventWithObjects(string);
+        return GenericEvent.isGenericEventWithObjects(string);
     }
 
+    /**
+     * Matcher used with generateEvents() to match an event with a string that starts with the given one
+     * @param string the event string initial part
+     * @return the Hamcrest matcher
+     */
     public static Matcher<GenericEvent> starts(String string)
     {
-        return Matchers.isGenericEventWithObjectsThatMatch(generalStringMatcher(startsWith(string)));
+        return GenericEvent.isGenericEventWithObjectsThatMatch(generalStringMatcher(startsWith(string)));
     }
 
+    /**
+     * Matcher used with generateEvents() to match an event with a string that ends with the given one
+     * @param string the event string final part
+     * @return the Hamcrest matcher
+     */
     public static Matcher<GenericEvent> ends(String string)
     {
-        return Matchers.isGenericEventWithObjectsThatMatch(generalStringMatcher(endsWith(string)));
+        return GenericEvent.isGenericEventWithObjectsThatMatch(generalStringMatcher(endsWith(string)));
     }
 
+    /**
+     * Wrapper matcher that applies a String matcher to an object (i.e. only if the object is a string)
+     * @param matcher the string matcher
+     * @return the object matcher
+     */
     private static Matcher<Object> generalStringMatcher(final Matcher<String> matcher)
     {
         return new BaseMatcher<Object>()
@@ -78,6 +105,12 @@ public abstract class RxTestUtils
         };
     }
 
+    /**
+     * Assertions for testing a consistency check
+     * @param events all the events of the stream
+     * @param check the check to be applied
+     * @param outcome the expected outcome
+     */
     public static void assertThatOutcomeIs(String[] events, Check check, final Outcome outcome)
     {
         Observable<? extends Event> observable = generateEvents(events);
@@ -100,9 +133,10 @@ public abstract class RxTestUtils
         assertEquals("Test failed, report is '"+result.getMessage()+"'", outcome, result.getOutcome());
     }
 
-
-
-
+    /**
+     * A check that always returns SUCCESS
+     * @return the check
+     */
     public static Check alwaysSuccessCheck()
     {
         return new Check(new CheckSubscriber()
@@ -121,6 +155,10 @@ public abstract class RxTestUtils
         });
     }
 
+    /**
+     * A check that always returns FAILURE
+     * @return the check
+     */
     public static Check alwaysFailureCheck()
     {
         return new Check(new CheckSubscriber()
@@ -139,6 +177,10 @@ public abstract class RxTestUtils
         });
     }
 
+    /**
+     * A check that always returns WARNING
+     * @return the check
+     */
     public static Check alwaysWarningCheck()
     {
         return new Check(new CheckSubscriber()

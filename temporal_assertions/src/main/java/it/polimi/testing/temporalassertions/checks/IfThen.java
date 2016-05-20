@@ -1,10 +1,21 @@
 package it.polimi.testing.temporalassertions.checks;
 
+/**
+ * Connective that allows to express a material conditional (single implication) between two checks:
+ * it evaluates the second check only if the first one does not fail
+ *
+ * C1 => C2
+ */
 public class IfThen extends CheckConnective
 {
     private Check ifCheck;
     private Check thenCheck;
 
+    /**
+     * Constructor
+     * @param ifCheck the left term of the implication
+     * @param thenCheck the right term of the implication
+     */
     public IfThen(Check ifCheck, Check thenCheck)
     {
         super(ifCheck, thenCheck);
@@ -12,6 +23,9 @@ public class IfThen extends CheckConnective
         this.thenCheck = thenCheck;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     ResultsSubscriber getResultsSubscriber()
     {
@@ -47,10 +61,13 @@ public class IfThen extends CheckConnective
             @Override
             Result getFinalResult()
             {
+                // Success if the precondition fails, independently of the actual check outcome
                 if(Outcome.FAILURE.equals(ifResult.getOutcome()))
                 {
                     return new Result(Outcome.SUCCESS, "The pre-condition didn't hold");
                 }
+
+                // If the precondition didn't fail, then return the result of the actual check
                 else
                 {
                     return thenResult;

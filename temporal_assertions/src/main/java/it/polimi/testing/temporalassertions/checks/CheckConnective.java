@@ -6,11 +6,19 @@ import java.util.List;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.Subscriber;
 
+/**
+ * A check connective is a check that contains other checks, i.e. it allows to "combine" several
+ * checks and then return a single final result
+ */
 public abstract class CheckConnective extends Check
 {
     private final Check[] checks;
     private Subscriber<? super Result> finalResultChild;
 
+    /**
+     * Constructor
+     * @param checks the checks contained in this connective
+     */
     CheckConnective(Check... checks)
     {
         super(null);
@@ -18,16 +26,19 @@ public abstract class CheckConnective extends Check
         this.checks = checks;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CheckSubscriber getCheckSubscriber(final Subscriber<? super Result> finalResultChild)
     {
         this.finalResultChild = finalResultChild;
         final List<CheckSubscriber> singleTermSubscribers = new ArrayList<>();
 
-        // This subscriber receives all results of the "child" checks: it implements the actual logic of the connective
+        // This subscriber receives all results of the internal checks: it implements the actual logic of the connective
         final Subscriber<ChildResult> resultsSubscriber = getResultsSubscriber();
 
-        // Loop all "child" checks
+        // Loop all internal checks
         for(final Check check: checks)
         {
             // Each check has a child that will forward the result to the results subscriber
@@ -66,18 +77,22 @@ public abstract class CheckConnective extends Check
                     }
                 }
 
+                /**
+                 * Simply sends the result to the results subscriber
+                 * @param result the result
+                 */
                 private void forwardResult(Result result)
                 {
                     resultsSubscriber.onNext(new ChildResult(check, result));
                 }
             };
 
-            // Get the "child" check subscriber and add the child
+            // Get the internal check subscriber and add the child
             CheckSubscriber singleTermCheckSubscriber = check.getCheckSubscriber(singleTermChild);
             singleTermSubscribers.add(singleTermCheckSubscriber);
         }
 
-        // Return a subscriber that will be attached to the main event stream and takes care of forwarding the received events to all "child" checks
+        // Return a subscriber that will be attached to the main event stream and takes care of forwarding the received events to all internal checks
         return new CheckSubscriber()
         {
             private boolean allTermsUnsubscribed;
@@ -85,7 +100,7 @@ public abstract class CheckConnective extends Check
             @Override
             public void onCompleted()
             {
-                // Send the onCompleted to all the "child" subscribers
+                // Send the onCompleted to all the internal subscribers
                 for(CheckSubscriber singleTermSubscriber: singleTermSubscribers)
                 {
                     if(!singleTermSubscriber.isUnsubscribed())
@@ -106,7 +121,7 @@ public abstract class CheckConnective extends Check
             {
                 allTermsUnsubscribed = true;
 
-                // Forward the events to each "child" subscriber
+                // Forward the events to each internal subscriber
                 for(CheckSubscriber singleTermSubscriber: singleTermSubscribers)
                 {
                     if(!singleTermSubscriber.isUnsubscribed())
@@ -116,7 +131,7 @@ public abstract class CheckConnective extends Check
                     }
                 }
 
-                // If all "child" subscribers already unsubscribed on their own, no need to receive events anymore
+                // If all internal subscribers already unsubscribed on their own, no need to receive events anymore
                 if(allTermsUnsubscribed)
                 {
                     unsubscribe();
@@ -125,8 +140,16 @@ public abstract class CheckConnective extends Check
         };
     }
 
+    /**
+     * Getter
+     * @return the subscriber that receives all results of the internal checks
+     */
     abstract ResultsSubscriber getResultsSubscriber();
 
+    /**
+     * The subscriber that receives all results of the internal checks, i.e. the actual implementation
+     * of the connective logic
+     */
     abstract class ResultsSubscriber extends Subscriber<ChildResult>
     {
         private int resultsToBeReceived = checks.length;
@@ -148,6 +171,7 @@ public abstract class CheckConnective extends Check
         @Override
         public void onError(Throwable e)
         {
+            // Forward error to main child
             if(!finalResultChild.isUnsubscribed())
             {
                 finalResultChild.onError(e);
@@ -160,29 +184,43 @@ public abstract class CheckConnective extends Check
             resultsToBeReceived--;
 
             // Allow subclasses to implement their connective logic
-            boolean continueStream = onNextResult(childResult.child, childResult.result);
+            boolean continueStream = onNextResult(childResult.check, childResult.result);
 
-            // Since onCompleted is never called by the "child" checks we need to check the condition here
+            // Since onCompleted is never called by the internal checks we need to check the condition here
             if(!continueStream || resultsToBeReceived<=0)
             {
                 onCompleted();
             }
         }
 
-        // Return is true if we can stop, false if we continue
+        /**
+         * Allows the implementations to receive the result of an internal check
+         * @param check the internal check related to the result
+         * @param result the result of the internal check
+         * @return true if we need to continue the stream of results, false if we stop (i.e. short-circuit the connective)
+         */
         abstract boolean onNextResult(Check check, Result result);
 
+        /**
+         * Allows to build the single final result of the connective.
+         * This is called either after onNextResult returns false or when all results of the internal checks
+         * have been received.
+         * @return the single final result of the connective
+         */
         abstract Result getFinalResult();
     }
 
+    /**
+     * Internal class to hold both a child and a result
+     */
     private static class ChildResult
     {
-        private Check child;
+        private Check check;
         private Result result;
 
-        private ChildResult(Check child, Result result)
+        private ChildResult(Check check, Result result)
         {
-            this.child = child;
+            this.check = check;
             this.result = result;
         }
     }

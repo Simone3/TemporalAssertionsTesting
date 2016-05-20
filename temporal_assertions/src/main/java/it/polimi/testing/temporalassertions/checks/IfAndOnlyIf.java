@@ -1,12 +1,26 @@
 package it.polimi.testing.temporalassertions.checks;
 
+/**
+ * Connective that allows to express a logical biconditional (double implication) between two checks:
+ * it returns SUCCESS only if both succeed or both fail
+ *
+ * C1 <==> C2
+ */
 public class IfAndOnlyIf extends CheckConnective
 {
+    /**
+     * Constructor
+     * @param firstCheck a check in the double implication
+     * @param secondCheck a check in the double implication
+     */
     public IfAndOnlyIf(Check firstCheck, Check secondCheck)
     {
         super(firstCheck, secondCheck);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     ResultsSubscriber getResultsSubscriber()
     {
@@ -18,6 +32,7 @@ public class IfAndOnlyIf extends CheckConnective
             @Override
             boolean onNextResult(Check check, Result result)
             {
+                // Simply store the two results in the field
                 results[i] = result;
                 i++;
 
@@ -27,16 +42,23 @@ public class IfAndOnlyIf extends CheckConnective
             @Override
             Result getFinalResult()
             {
+                // Get status of the two checks
                 boolean firstIsFailure = Outcome.FAILURE.equals(results[0].getOutcome());
                 boolean secondIsFailure = Outcome.FAILURE.equals(results[1].getOutcome());
+
+                // Success if both failed
                 if(firstIsFailure && secondIsFailure)
                 {
                     return new Result(Outcome.SUCCESS, "Both conditions didn't hold");
                 }
+
+                // Success if both didn't fail
                 else if(!firstIsFailure && !secondIsFailure)
                 {
                     return new Result(Outcome.SUCCESS, "Both conditions held");
                 }
+
+                // Failure if one fails and the other does not
                 else
                 {
                     if(firstIsFailure)

@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 
 import org.hamcrest.Matcher;
@@ -10,16 +10,35 @@ import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.quantifiers.AbstractQuantifier;
 import it.polimi.testing.temporalassertions.events.Event;
 
+/**
+ * Descriptor that allows to match a given number of events in the sequence. The number of those events
+ * is described by a quantifier, so it can be for example "exactly", "at least", etc.
+ */
 public class EventsWhereEach extends AbstractEventDescriptor
 {
     AbstractQuantifier quantifier;
 
+    /**
+     * Constructor
+     * @param quantifier the number of events that should be matched by the descriptor
+     * @param matcher the Hamcrest matcher to recognize the events
+     */
     public EventsWhereEach(AbstractQuantifier quantifier, Matcher<? extends Event> matcher)
     {
         super(matcher);
         this.quantifier = quantifier;
     }
 
+    /**
+     * Checks that the events described by {@code this} are always strictly after each {@code eventBefore}.
+     * For example {@code exactly(2).eventsWhereEach(m1).mustHappenAfter(anEventThat(m2)} means that after each
+     * {@code eventBefore} event there must be 2 {@code this} events. "Strictly" means that those 2 events must
+     * be before the next (if any) event matched by {@code this}
+     * @param eventBefore the event after which we must have {@code this} events
+     * @return the check will return SUCCESS if after each {@code eventBefore} we found the desired amount of
+     *         {@code this} events, FAILURE if we did not and WARNING if no {@code eventBefore} was found in
+     *         the sequence
+     */
     public Check mustHappenAfter(final AnEventThat eventBefore)
     {
         return new Check(new CheckSubscriber()
@@ -37,8 +56,10 @@ public class EventsWhereEach extends AbstractEventDescriptor
             {
                 switch(state.getState())
                 {
+                    // If we are in the CORRECT state...
                     case CORRECT:
 
+                        // If we match an "eventBefore" we move to the WAITING_FOR_E1s state
                         if(eventBefore.getMatcher().matches(event))
                         {
                             quantifier.resetCounter();
@@ -49,18 +70,25 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
+                    // If we are in the WAITING_FOR_E1s state...
                     case WAITING_FOR_E1s:
 
+                        // If we match a "this" event, simply increase the counter
                         if(getMatcher().matches(event))
                         {
                             quantifier.increaseCounter();
                         }
+
+                        // If we match an "eventBefore"...
                         else if(eventBefore.getMatcher().matches(event))
                         {
+                            // If the condition is met, we restart the count
                             if(quantifier.isConditionMet())
                             {
                                 quantifier.resetCounter();
                             }
+
+                            // Otherwise we have an error ("strictly" constraint: no "eventBefore" before we meet the desired number of "this" events!)
                             else
                             {
                                 state.setState(CONDITION_NOT_MET);
@@ -83,6 +111,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                 String report = null;
                 switch(state.getState())
                 {
+                    // If we are in CORRECT state, we can have a success or a warning
                     case CORRECT:
 
                         if(!foundAtLeastOneE2)
@@ -98,13 +127,17 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
+                    // If we are waiting for "this" events...
                     case WAITING_FOR_E1s:
 
+                        // If the last condition is met, it's a success
                         if(quantifier.isConditionMet())
                         {
                             outcome = SUCCESS_OUTCOME;
                             report = SUCCESS_REPORT;
                         }
+
+                        // Otherwise failure
                         else
                         {
                             outcome = Outcome.FAILURE;
@@ -113,6 +146,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
+                    // Failure, if we had an error
                     case CONDITION_NOT_MET:
 
                         outcome = Outcome.FAILURE;
@@ -126,6 +160,16 @@ public class EventsWhereEach extends AbstractEventDescriptor
         });
     }
 
+    /**
+     * Checks that the events described by {@code this} are always strictly before each {@code eventAfter}.
+     * For example {@code exactly(2).eventsWhereEach(m1).mustHappenBefore(anEventThat(m2)} means that before
+     * each {@code eventAfter} event there must be 2 {@code this} events. "Strictly" means that those 2 events
+     * must be after the previous (if any) event matched by {@code this}
+     * @param eventAfter the event before which we must have {@code this} events
+     * @return the check will return SUCCESS if before each {@code eventAfter} we found the desired amount of
+     *         {@code this} events, FAILURE if we did not and WARNING if no {@code eventAfter} was found in
+     *         the sequence
+     */
     public Check mustHappenBefore(final AnEventThat eventAfter)
     {
         return new Check(new CheckSubscriber()
@@ -140,18 +184,24 @@ public class EventsWhereEach extends AbstractEventDescriptor
             @Override
             public void onNext(Event event)
             {
+                // If we match "this", simply increase counter
                 if(getMatcher().matches(event))
                 {
                     quantifier.increaseCounter();
                 }
+
+                // If we match "eventAfter"...
                 else if(eventAfter.getMatcher().matches(event))
                 {
                     foundAtLeastOneE2 = true;
 
+                    // If the precondition is met, restart count
                     if(quantifier.isConditionMet())
                     {
                         quantifier.resetCounter();
                     }
+
+                    // Otherwise we have an error
                     else
                     {
                         state.setState(CONDITION_NOT_MET);
@@ -168,6 +218,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                 String report = null;
                 switch(state.getState())
                 {
+                    // If we are in CORRECT state, warning or success
                     case CORRECT:
 
                         if(!foundAtLeastOneE2)
@@ -183,7 +234,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
-
+                    // Failure if we had an error with one of the preconditions
                     case CONDITION_NOT_MET:
 
                         outcome = Outcome.FAILURE;
@@ -197,6 +248,18 @@ public class EventsWhereEach extends AbstractEventDescriptor
         });
     }
 
+    /**
+     * Checks that the events described by {@code this} are always strictly between each
+     * {@code eventBefore-eventAfter} pair. For example
+     * {@code exactly(2).eventsWhereEach(m1).mustHappenBetween(anEventThat(m2), anEventThat(m3)} means that
+     * between each pair of {@code eventBefore-eventAfter} events there must be 2 {@code this} events.
+     * "Strictly" means that those 2 events cannot be "shared" by overlapping pairs.
+     * @param eventBefore the event after which we must have {@code this} events
+     * @param eventAfter the event before which we must have {@code this} events
+     * @return the check will return SUCCESS if between each {@code eventBefore-eventAfter} pair we found the
+     *         desired amount of {@code this} events, FAILURE if we did not and WARNING if no
+     *         {@code eventBefore-eventAfter} pair was found in  the sequence
+     */
     public Check mustHappenBetween(final AnEventThat eventBefore, final AnEventThat eventAfter)
     {
         return new Check(new CheckSubscriber()
@@ -207,13 +270,14 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
             private State state = new State(CORRECT);
 
-            private boolean foundAtLeastOneCouple = false;
+            private boolean foundAtLeastOnePair = false;
 
             @Override
             public void onNext(Event event)
             {
                 switch(state.getState())
                 {
+                    // If we are CORRECT state and we match an "eventBefore" we go in BETWEEN to wait for the "this" events
                     case CORRECT:
 
                         if(eventBefore.getMatcher().matches(event))
@@ -225,19 +289,27 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
+                    // If we are in BETWEEN (i.e. after an "eventBefore")
                     case BETWEEN:
 
+                        // Increase counter if we find a "this" event
                         if(getMatcher().matches(event))
                         {
                             quantifier.increaseCounter();
                         }
+
+                        // If we match an "eventAfter" event...
                         else if(eventAfter.getMatcher().matches(event))
                         {
+                            // Go back to CORRECT if the condition is met
                             if(quantifier.isConditionMet())
                             {
                                 quantifier.resetCounter();
-                                foundAtLeastOneCouple = true;
+                                state.setState(CORRECT);
+                                foundAtLeastOnePair = true;
                             }
+
+                            // Error otherwise
                             else
                             {
                                 state.setState(CONDITION_NOT_MET);
@@ -245,6 +317,8 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                 endCheck();
                             }
                         }
+
+                        // If we match another "eventBefore" before we find an "eventAfter", simply reset the counter
                         else if(eventBefore.getMatcher().matches(event))
                         {
                             quantifier.resetCounter();
@@ -261,10 +335,11 @@ public class EventsWhereEach extends AbstractEventDescriptor
                 String report = null;
                 switch(state.getState())
                 {
+                    // Success or warning if we are in CORRECT (all pairs contained the expected number of "this" events) or in BETWEEN (in the last part we found an "eventBefore" but no "eventAfter" to close the pair, so it's ok)
                     case CORRECT:
                     case BETWEEN:
 
-                        if(!foundAtLeastOneCouple)
+                        if(!foundAtLeastOnePair)
                         {
                             outcome = Outcome.WARNING;
                             report = "No pair of events that "+eventBefore.getMatcher()+" and "+eventBefore.getMatcher()+" respectively were found in the sequence";
@@ -277,6 +352,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                         break;
 
+                    // Failure if we found an error
                     case CONDITION_NOT_MET:
 
                         outcome = Outcome.FAILURE;

@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 
 import org.junit.Test;
@@ -10,7 +10,7 @@ import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcome
 import static it.polimi.testing.temporalassertions.RxTestUtils.ends;
 import static it.polimi.testing.temporalassertions.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.RxTestUtils.starts;
-import static it.polimi.testing.temporalassertions.matchers.AllEventsWhereEach.allEventsWhereEach;
+import static it.polimi.testing.temporalassertions.descriptors.AllEventsWhereEach.allEventsWhereEach;
 import static it.polimi.testing.temporalassertions.quantifiers.AtLeast.atLeast;
 import static it.polimi.testing.temporalassertions.quantifiers.AtMost.atMost;
 import static it.polimi.testing.temporalassertions.quantifiers.Exactly.exactly;

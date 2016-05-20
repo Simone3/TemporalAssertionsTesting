@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 
 import org.hamcrest.Matcher;
@@ -10,41 +10,87 @@ import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 
 import static it.polimi.testing.temporalassertions.checks.AllHold.allHold;
-import static it.polimi.testing.temporalassertions.matchers.AllEventsWhereEach.allEventsWhereEach;
+import static it.polimi.testing.temporalassertions.descriptors.AllEventsWhereEach.allEventsWhereEach;
 import static it.polimi.testing.temporalassertions.quantifiers.AtLeast.atLeast;
 
+/**
+ * Descriptor that matches a single event in the sequence
+ */
 public class AnEventThat extends AbstractEventDescriptor
 {
+    /**
+     * {@inheritDoc}
+     */
     private AnEventThat(Matcher<? extends Event> matcher)
     {
         super(matcher);
     }
 
+    /**
+     * Descriptor that matches a single event in the sequence
+     * @param matcher the Hamcrest matcher to recognize the event
+     * @return the descriptor of a single event
+     */
     public static AnEventThat anEventThat(Matcher<? extends Event> matcher)
     {
         return new AnEventThat(matcher);
     }
 
+    /**
+     * Checks that {@code this} exists, i.e. at least one event in the sequence matches the Hamcrest matcher
+     * @return the check will return SUCCESS if {@code this} exists, FAILURE if it does not
+     */
     public Check exists()
     {
         return allEventsWhereEach(getMatcher()).are(atLeast(1));
     }
 
+    /**
+     * Checks that {@code this} exists after {@code eventBefore}, i.e. there's at least one {@code this} in
+     * the sequence after {@code eventBefore}
+     * @param eventBefore the descriptor of the event after which we must find {@code this}
+     * @return the check will return SUCCESS if {@code this} exists after {@code eventBefore}, FAILURE if it
+     *         does not and WARNING if no {@code eventBefore} has been found in the sequence
+     */
     public Check existsAfter(final AnEventThat eventBefore)
     {
         return atLeast(1).eventsWhereEach(getMatcher()).mustHappenAfter(eventBefore);
     }
 
+    /**
+     * Checks that {@code this} exists before {@code eventAfter}, i.e. there's at least one {@code this} in
+     * the sequence before {@code eventAfter}
+     * @param eventAfter the descriptor of the element before which we must find {@code this}
+     * @return the check will return SUCCESS if {@code this} exists before {@code eventAfter}, FAILURE if it
+     *         does not and WARNING if no {@code eventAfter} has been found in the sequence
+     */
     public Check existsBefore(final AnEventThat eventAfter)
     {
         return atLeast(1).eventsWhereEach(getMatcher()).mustHappenBefore(eventAfter);
     }
 
+    /**
+     * Checks that {@code this} exists between {@code eventBefore} and {@code eventAfter}, i.e. there's at
+     * least one {@code this} in the sequence after {@code eventBefore} and before {@code eventAfter}
+     * @param eventBefore the descriptor of the element after which we must find {@code this}
+     * @param eventAfter the descriptor of the element before which we must find {@code this}
+     * @return the check will return SUCCESS if {@code this} exists between {@code eventBefore} and
+     *         {@code eventAfter}, FAILURE if it does not and WARNING if no pair
+     *         {@code eventBefore-eventAfter} has been found in the sequence
+     */
     public Check existsBetween(final AnEventThat eventBefore, final AnEventThat eventAfter)
     {
         return atLeast(1).eventsWhereEach(getMatcher()).mustHappenBetween(eventBefore, eventAfter);
     }
 
+    /**
+     * Checks that {@code this} is ONLY after {@code eventBefore}, i.e. there cannot be any {@code this} before
+     * {@code eventBefore}
+     * @param eventBefore the descriptor of the element before which we cannot find {@code this}
+     * @return the check will return SUCCESS if every {@code this} is after a {@code eventBefore} or is not in
+     *         the sequence at all, FAILURE if there's at least one before {@code eventBefore} and WARNING if no
+     *         {@code eventBefore} has been found in the sequence
+     */
     public Check canOnlyHappenAfter(final AnEventThat eventBefore)
     {
         return new Check(new CheckSubscriber()
@@ -60,6 +106,7 @@ public class AnEventThat extends AbstractEventDescriptor
             {
                 switch(state.getState())
                 {
+                    // If we are still waiting for "eventBefore"...
                     case FOUND_NO_E2:
 
                         // If I find an event that matches the parameter...
@@ -91,6 +138,7 @@ public class AnEventThat extends AbstractEventDescriptor
                 String report = null;
                 switch(state.getState())
                 {
+                    // Warning if no "eventBefore" has been found in the sequence
                     case FOUND_NO_E2:
 
                         outcome = Outcome.WARNING;
@@ -98,6 +146,7 @@ public class AnEventThat extends AbstractEventDescriptor
 
                         break;
 
+                    // Success if we didn't find any "this" before "eventBefore"
                     case FOUND_E2:
 
                         outcome = Outcome.SUCCESS;
@@ -105,6 +154,7 @@ public class AnEventThat extends AbstractEventDescriptor
 
                         break;
 
+                    // Failure if we found a "this" before "eventBefore"
                     case FOUND_E1_BEFORE_E2:
 
                         outcome = Outcome.FAILURE;
@@ -118,6 +168,14 @@ public class AnEventThat extends AbstractEventDescriptor
         });
     }
 
+    /**
+     * Checks that {@code this} is ONLY before {@code eventAfter}, i.e. there cannot be any {@code this} after
+     * {@code eventAfter}
+     * @param eventAfter the descriptor of the element after which we cannot find {@code this}
+     * @return the check will return SUCCESS if every {@code this} is before a {@code eventAfter} or is not in
+     *         the sequence at all, FAILURE if there's at least one after {@code eventBefore} and WARNING if no
+     *         {@code this} has been found in the sequence
+     */
     public Check canOnlyHappenBefore(final AnEventThat eventAfter)
     {
         return new Check(new CheckSubscriber()
@@ -134,9 +192,10 @@ public class AnEventThat extends AbstractEventDescriptor
             {
                 switch(state.getState())
                 {
+                    // If we are in the CORRECT state (i.e. found an "eventAfter" after each "this" so far)
                     case CORRECT:
 
-                        //
+                        // If we match "this", go to the FOUND_E1 state
                         if(getMatcher().matches(event))
                         {
                             state.setState(FOUND_E1);
@@ -146,9 +205,10 @@ public class AnEventThat extends AbstractEventDescriptor
 
                         break;
 
+                    // If we found a "this" but not an "eventAfter" after it...
                     case FOUND_E1:
 
-                        //
+                        // If we match "eventAfter", go back to CORRECT
                         if(eventAfter.getMatcher().matches(event))
                         {
                             state.setState(CORRECT);
@@ -166,13 +226,17 @@ public class AnEventThat extends AbstractEventDescriptor
                 String report = null;
                 switch(state.getState())
                 {
+                    // If we are in the CORRECT state...
                     case CORRECT:
 
+                        // Success if we found at least one "this" and a "eventAfter" after every one of them
                         if(foundAtLeastOneE1)
                         {
                             outcome = Outcome.SUCCESS;
                             report = "Every event that "+getMatcher()+" was found before "+state.getEvent(0);
                         }
+
+                        // Warning if no "this" has been found in the sequence
                         else
                         {
                             outcome = Outcome.WARNING;
@@ -181,6 +245,7 @@ public class AnEventThat extends AbstractEventDescriptor
 
                         break;
 
+                    // Failure if we found a "this" but no "eventAfter" after it
                     case FOUND_E1:
 
                         outcome = Outcome.FAILURE;
@@ -194,11 +259,23 @@ public class AnEventThat extends AbstractEventDescriptor
         });
     }
 
+    /**
+     * Checks that {@code this} is ONLY between {@code eventBetween} and {@code eventAfter}, i.e. there
+     * cannot be any {@code this} after {@code eventAfter} or before {@code eventBefore}
+     * @param eventBefore the descriptor of the element before which we cannot find {@code this}
+     * @param eventAfter the descriptor of the element after which we cannot find {@code this}
+     * @return the check will return SUCCESS if every {@code this} is before a {@code eventAfter} and after
+     *         a {@code eventBefore} or is not in the sequence at all, FAILURE if there's at least one
+     *         after {@code eventAfter} or before {@code eventBefore} and WARNING if TODO warnings in allHold...
+     */
     public Check canOnlyHappenBetween(AnEventThat eventBefore, AnEventThat eventAfter)
     {
         return allHold(canOnlyHappenAfter(eventBefore), canOnlyHappenBefore(eventAfter));
     }
 
+    /**
+     * TODO (if kept)
+     */
     public Check mustHappenAfter(final AnEventThat eventBefore)
     {
         return new Check(new CheckSubscriber()

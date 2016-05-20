@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 
 import org.hamcrest.Description;
@@ -10,9 +10,9 @@ import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
 
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isTextChangeEvent;
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isTextChangeEventFrom;
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isTextChangeEventWhereTextMatches;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEvent;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventWhereTextMatches;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -28,13 +28,13 @@ public class MatchersUnitTest
         Matcher<?> matcher = isTextChangeEventWhereTextMatches(is(equalTo("Text")));
         assertTrue(matcher.matches(textChangeEvent));
 
-        matcher = isTextChangeEvent();
+        matcher = TextChangeEvent.isTextChangeEvent();
         assertTrue(matcher.matches(textChangeEvent));
 
         matcher = isTextChangeEventFrom(null);
         assertTrue(matcher.matches(textChangeEvent));
 
-        matcher = isTextChangeEvent(null, startsWith("Te"));
+        matcher = TextChangeEvent.isTextChangeEvent(null, startsWith("Te"));
         assertTrue(matcher.matches(textChangeEvent));
     }
 
@@ -45,13 +45,13 @@ public class MatchersUnitTest
         Matcher<?> matcher = isTextChangeEventWhereTextMatches(is(equalTo("Text")));
         assertFalse(matcher.matches(genericEvent));
 
-        matcher = isTextChangeEvent();
+        matcher = TextChangeEvent.isTextChangeEvent();
         assertFalse(matcher.matches(genericEvent));
 
         matcher = isTextChangeEventFrom(null);
         assertFalse(matcher.matches(genericEvent));
 
-        matcher = isTextChangeEvent(null, startsWith("Te"));
+        matcher = TextChangeEvent.isTextChangeEvent(null, startsWith("Te"));
         assertFalse(matcher.matches(genericEvent));
     }
 

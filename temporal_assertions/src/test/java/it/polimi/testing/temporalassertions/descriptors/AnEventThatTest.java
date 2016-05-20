@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 import org.junit.Test;
 
@@ -7,7 +7,7 @@ import it.polimi.testing.temporalassertions.checks.Outcome;
 
 import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.RxTestUtils.is;
-import static it.polimi.testing.temporalassertions.matchers.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
 
 public class AnEventThatTest
 {

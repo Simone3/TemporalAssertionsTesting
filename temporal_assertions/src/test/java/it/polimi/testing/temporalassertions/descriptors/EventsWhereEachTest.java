@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.matchers;
+package it.polimi.testing.temporalassertions.descriptors;
 
 
 import org.junit.Test;
@@ -8,7 +8,8 @@ import it.polimi.testing.temporalassertions.checks.Outcome;
 
 import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.RxTestUtils.is;
-import static it.polimi.testing.temporalassertions.matchers.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.checks.AllHold.allHold;
+import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.quantifiers.AtLeast.atLeast;
 import static it.polimi.testing.temporalassertions.quantifiers.AtMost.atMost;
 import static it.polimi.testing.temporalassertions.quantifiers.Exactly.exactly;
@@ -272,6 +273,20 @@ public class EventsWhereEachTest
     {
         String[] events = new String[]{"A", "B", "D", "C", "D", "F", "B", "B", "D", "D", "F", "B"};
         Check check = exactly(2).eventsWhereEach(is("D")).mustHappenBetween(anEventThat(is("B")), anEventThat(is("F")));
+        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
+    }
+
+    @Test
+    public void testExactlyMustHappenBetween_BetweenNotEqualToAfterAndBetween()
+    {
+        // This test "explains" why "between" is not "after && before" but a different implementation
+
+        String[] events = new String[]{"A", "D", "B", "D", "C", "D", "F", "D", "C"};
+
+        Check check = exactly(3).eventsWhereEach(is("D")).mustHappenBetween(anEventThat(is("B")), anEventThat(is("F")));
+        assertThatOutcomeIs(events, check, Outcome.FAILURE);
+
+        check = allHold(exactly(3).eventsWhereEach(is("D")).mustHappenAfter(anEventThat(is("B"))), exactly(3).eventsWhereEach(is("D")).mustHappenBefore(anEventThat(is("F"))));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 

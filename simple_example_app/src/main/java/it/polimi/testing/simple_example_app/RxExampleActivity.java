@@ -15,10 +15,10 @@ import it.polimi.testing.temporalassertions.monitor.EventMonitor;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static it.polimi.testing.temporalassertions.matchers.AnEventThat.anEventThat;
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isCallbackEvent;
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isTextChangeEvent;
-import static it.polimi.testing.temporalassertions.matchers.Matchers.isTextChangeEventFrom;
+import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEvent;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -101,16 +101,16 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
         eventMonitor.observe(resultObservable);
 
 
-        eventMonitor.checkThat(anEventThat(isCallbackEvent("Activity->Fragment"))
+        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Activity->Fragment"))
                                 .exists());
 
-        eventMonitor.checkThat(anEventThat(isCallbackEvent("Fragment->Activity"))
+        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Fragment->Activity"))
                                 .exists());
 
-        eventMonitor.checkThat(anEventThat(isTextChangeEvent(resultView, is(equalTo("Completed!"))))
+        eventMonitor.checkThat(anEventThat(TextChangeEvent.isTextChangeEvent(resultView, is(equalTo("Completed!"))))
                                 .exists());
 
-        eventMonitor.checkThat(anEventThat(isCallbackEvent("Activity->Fragment"))
+        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Activity->Fragment"))
                                 .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
     }
 

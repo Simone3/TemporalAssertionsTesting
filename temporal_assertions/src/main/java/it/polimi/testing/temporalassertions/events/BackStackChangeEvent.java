@@ -4,6 +4,9 @@ import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 
+/**
+ * TODO
+ */
 public class BackStackChangeEvent extends Event
 {
     private final FragmentManager fragmentManager;

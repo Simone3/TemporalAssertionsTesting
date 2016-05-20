@@ -14,6 +14,10 @@ import rx.Subscriber;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
+/**
+ * This is the main interface of the library. It allows to register observables to build the event stream,
+ * to add consistency checks on the events and to receive the results of the analysis
+ */
 public class EventMonitor
 {
     private Observable<? extends Event> merged;
@@ -33,6 +37,9 @@ public class EventMonitor
     }
     private State state;
 
+    /**
+     * Constructor
+     */
     private EventMonitor()
     {
         System.out.println("[...MONITOR...] Created");
@@ -40,6 +47,10 @@ public class EventMonitor
         state = State.STOPPED;
     }
 
+    /**
+     * Getter for the single instance of the monitor
+     * @return the event monitor
+     */
     public static synchronized EventMonitor getInstance()
     {
         System.out.println("[...MONITOR...] Get instance "+instance);
@@ -48,6 +59,10 @@ public class EventMonitor
         return instance;
     }
 
+    /**
+     * This is called to start the monitor: after this call it will be possible to register observables and
+     * add consistency checks (in any order)
+     */
     public void initialize()
     {
         if(isStopped())
@@ -60,6 +75,12 @@ public class EventMonitor
         }
     }
 
+    /**
+     * This method starts the verification on the stream, usually called for example during onCreate of a component.
+     * After this call it will not be possible to add further observables or consistency checks
+     * @param eventsSubscriber the subscriber that will receive in order all the events of the stream (if null the default subscriber will be used)
+     * @param resultsSubscriber the subscriber that will receive the results of the consistency checks (if null the default subscriber will be used)
+     */
     public void startVerification(@Nullable Subscriber<? super Event> eventsSubscriber, @Nullable Subscriber<Result> resultsSubscriber)
     {
         if(isInitialized())
@@ -74,6 +95,12 @@ public class EventMonitor
         }
     }
 
+    /**
+     * Allows to add an observable that will add its events to the monitored stream. The observables can be added
+     * in any order. This method can be called only after {@link EventMonitor#initialize()} and before
+     * {@link EventMonitor#startVerification(Subscriber, Subscriber)}
+     * @param observable the event observable to be added
+     */
     public void observe(Observable<? extends Event> observable)
     {
         if(isInitialized())
@@ -85,6 +112,11 @@ public class EventMonitor
         }
     }
 
+    /**
+     * Allows to fire an event outside the added observables, useful for example to fire any
+     * custom event without creating an observable just for that
+     * @param event the event that will be added to the stream
+     */
     public void fireCustomEvent(Event event)
     {
         if(isInitialized() || isVerifying())
@@ -99,6 +131,12 @@ public class EventMonitor
         }
     }
 
+    /**
+     * Allows to add a consistency check that will have to hold in the monitored stream. The checks can be
+     * added in any order.. This method can be called only after {@link EventMonitor#initialize()} and before
+     * {@link EventMonitor#startVerification(Subscriber, Subscriber)}
+     * @param check the consistency check to be added
+     */
     public void checkThat(Check check)
     {
         if(isInitialized())
@@ -109,6 +147,11 @@ public class EventMonitor
         }
     }
 
+    /**
+     * Allows to stop the verification, usually called for example during onDestroy of a component.
+     * This will send an onCompleted event to the stream and the checks that are still in progress
+     * (i.e. not short-circuited) will terminate.
+     */
     public void stopVerification()
     {
         System.out.println("[...MONITOR...] Stop verification");
@@ -120,37 +163,47 @@ public class EventMonitor
         cleanFields();
     }
 
-
-
-
-
+    /**
+     * Internal helper to get the current state
+     * @return true if initialize() has been called
+     */
     private boolean isInitialized()
     {
         return State.INITIALIZED.equals(state);
     }
 
+    /**
+     * Internal helper to get the current state
+     * @return true if startVerification() has been called
+     */
     private boolean isVerifying()
     {
         return State.VERIFYING.equals(state);
     }
 
+    /**
+     * Internal helper to get the current state
+     * @return true if stopVerification() has been called
+     */
     private boolean isStopped()
     {
         return State.STOPPED.equals(state);
     }
 
-
-
-
-
-    private void applyChecks(Subscriber<Result> resultsSubscriber)
+    /**
+     * This allows to apply the checks to the current stream and send them to the given subscriber
+     * @param resultsSubscriber the subscriber that will receive the results of the consistency checks (if null the default subscriber will be used)
+     */
+    private void applyChecks(@Nullable Subscriber<Result> resultsSubscriber)
     {
+        // Get default subscriber if needed
         if(resultsSubscriber==null)
         {
             resultsSubscriber = getDefaultResultsSubscriber();
         }
         this.resultsSubscriber = resultsSubscriber;
 
+        // Apply "EnforceCheck" operator for each check and merge the returned observables
         Observable<Result> resultsObservable = Observable.empty();
         for(Check check: checks)
         {
@@ -159,9 +212,14 @@ public class EventMonitor
         }
         checks.clear();
 
+        // The given subscriber will receive all results
         resultsObservable.subscribe(resultsSubscriber);
     }
 
+    /**
+     * Getter
+     * @return the default results subscriber
+     */
     private Subscriber<Result> getDefaultResultsSubscriber()
     {
         return new Subscriber<Result>()
@@ -186,24 +244,29 @@ public class EventMonitor
         };
     }
 
-
-
-
-
-
-    private void setupEventsSubscriber(Subscriber<? super Event> subscriber)
+    /**
+     * This allows to set the subscriber that will receive all events in the stream
+     * @param eventsSubscriber the subscriber that will receive the results of the consistency checks (if null the default subscriber will be used)
+     */
+    private void setupEventsSubscriber(Subscriber<? super Event> eventsSubscriber)
     {
         System.out.println("[...MONITOR...] Set subscriber");
 
-        if(subscriber==null)
+        // Get default subscriber if needed
+        if(eventsSubscriber==null)
         {
-            subscriber = getDefaultEventsSubscriber();
+            eventsSubscriber = getDefaultEventsSubscriber();
         }
-        this.subscriber = subscriber;
+        this.subscriber = eventsSubscriber;
 
-        subject.subscribe(subscriber);
+        // Subscribe to the subject
+        subject.subscribe(eventsSubscriber);
     }
 
+    /**
+     * Getter
+     * @return the default events subscriber
+     */
     private Subscriber<? super Event> getDefaultEventsSubscriber()
     {
         return new Subscriber<Event>()
@@ -228,11 +291,13 @@ public class EventMonitor
         };
     }
 
-
-
-
-
-
+    /**
+     * Helper to create a subject from the given "merged" observable
+     *
+     * The subject is needed because during stopVerification we need to call onCompleted
+     * to tell that the stream ended (in Android many streams never complete, e.g. text change
+     * on a TextView can potentially generate events forever)
+     */
     private void initializeSubject()
     {
         System.out.println("[...MONITOR...] Build subject");
@@ -241,6 +306,9 @@ public class EventMonitor
         merged.subscribe(subject);
     }
 
+    /**
+     * Helper to create an internal listener that will be used to fire custom events
+     */
     private void setupInternalListener()
     {
         Observable<Event> internalObserver = Observable.create(new Observable.OnSubscribe<Event>()
@@ -265,6 +333,9 @@ public class EventMonitor
         observe(internalObserver);
     }
 
+    /**
+     * Helper to wipe the class fields after the monitor is stopped
+     */
     private void cleanFields()
     {
         subject = null;
@@ -282,12 +353,15 @@ public class EventMonitor
         instance = null;
     }
 
-
-
-
-
+    /**
+     * Internal listener that will be used to fire custom events
+     */
     private interface ManualEventListener
     {
+        /**
+         * Called when a custom event is fired
+         * @param event the fired event
+         */
         void onFireEvent(Event event);
     }
 }
