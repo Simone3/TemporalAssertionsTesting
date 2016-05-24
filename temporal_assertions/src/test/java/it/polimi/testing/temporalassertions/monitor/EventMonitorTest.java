@@ -2,9 +2,13 @@ package it.polimi.testing.temporalassertions.monitor;
 
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
+import it.polimi.testing.temporalassertions.BuildConfig;
 import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.observers.TestSubscriber;
@@ -15,13 +19,10 @@ import static it.polimi.testing.temporalassertions.RxTestUtils.generateEvents;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class EventMonitorTest
 {
-    private void pause()
-    {
-        try{Thread.sleep(2000);}catch(Exception e){/**/}
-    }
-
     private void addObservables()
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
@@ -38,7 +39,6 @@ public class EventMonitorTest
         eventMonitor.checkThat("", alwaysSuccessCheck());
         eventMonitor.checkThat("", alwaysFailureCheck());
         eventMonitor.checkThat("", alwaysSuccessCheck());
-        //eventMonitor.checkThat(allEventsWhereEach(isA(Event.class)).are(exactly(expectedEvents)));
     }
 
     private void startVerification(int expectedResults, int expectedEvents)

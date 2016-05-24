@@ -1,6 +1,7 @@
 package it.polimi.testing.temporalassertions.monitor;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,9 @@ import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.operators.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
@@ -21,6 +24,8 @@ import rx.subjects.Subject;
  */
 public class EventMonitor
 {
+    private final static String TAG = "EventMonitor";
+
     private Observable<? extends Event> merged;
     private Subscriber<? super Event> subscriber;
     private Subject<? super Event, ? extends Event> subject;
@@ -114,7 +119,7 @@ public class EventMonitor
         {
             if(manualEventListener==null)
             {
-                System.out.println("------------------- manualEventListener is null, "+event+" skipped!");
+                Log.v(TAG, "manualEventListener is null, "+event+" skipped!");
                 return;
             }
 
@@ -228,19 +233,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                System.out.println("[-----RESULT-----] COMPLETED!");
+                Log.v(TAG, "[-----RESULT-----] All results received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                System.out.println("[-----RESULT-----] ERROR!");
+                Log.v(TAG, "[-----RESULT-----] Error:");
+                e.printStackTrace();
             }
 
             @Override
             public void onNext(Result result)
             {
-                System.out.println("[-----RESULT-----] "+result);
+                Log.v(TAG, "[-----RESULT-----] "+result);
             }
         };
     }
@@ -273,19 +279,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                System.out.println("[---EVENT---] COMPLETED!");
+                Log.v(TAG, "[---EVENT---] All events received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                System.out.println("[---EVENT---] ERROR!");
+                Log.v(TAG, "[---EVENT---] Error:");
+                e.printStackTrace();
             }
 
             @Override
             public void onNext(Event event)
             {
-                System.out.println("[---EVENT---] "+event);
+                Log.v(TAG, "[---EVENT---] "+event);
             }
         };
     }
@@ -300,7 +307,9 @@ public class EventMonitor
     private void initializeSubject()
     {
         subject = ReplaySubject.<Event>create();
-        merged.subscribe(subject);
+        merged.subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.newThread())
+                .subscribe(subject);
     }
 
     /**

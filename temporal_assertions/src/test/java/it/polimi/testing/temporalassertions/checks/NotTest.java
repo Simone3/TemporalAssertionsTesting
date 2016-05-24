@@ -31,7 +31,7 @@ public class NotTest
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
         Check check = notTrueThat(alwaysWarningCheck());
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
+        assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
     @Test
