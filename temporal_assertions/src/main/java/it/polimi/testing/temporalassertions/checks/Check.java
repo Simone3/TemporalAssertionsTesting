@@ -10,13 +10,17 @@ import rx.Subscriber;
 public class Check
 {
     private CheckSubscriber checkSubscriber;
+    private String description;
+    private String userFailureMessage;
 
     /**
      * Constructor
+     * @param description a description of the check
      * @param checkSubscriber the subscriber that implements the check logic
      */
-    public Check(CheckSubscriber checkSubscriber)
+    public Check(String description, CheckSubscriber checkSubscriber)
     {
+        this.description = description;
         this.checkSubscriber = checkSubscriber;
     }
 
@@ -29,5 +33,52 @@ public class Check
     {
         checkSubscriber.setChild(child);
         return checkSubscriber;
+    }
+
+    /**
+     * Getter
+     * @return the message provided by the user to be displayed in case of check failure
+     */
+    public String getUserFailureMessage()
+    {
+        return userFailureMessage;
+    }
+
+    /**
+     * Getter
+     * @return a description of the check
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * Setter
+     * @param userFailureMessage the message provided by the user to be displayed in case of check failure
+     */
+    public void setUserFailureMessage(String userFailureMessage)
+    {
+        this.userFailureMessage = userFailureMessage;
+    }
+
+    /**
+     * Changes the description of the check with the given one
+     * @param newDescription the new description
+     * @return the check itself with changed description (useful for chaining)
+     */
+    public Check overwriteDescription(String newDescription)
+    {
+        this.description = newDescription;
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return description;
     }
 }

@@ -101,17 +101,21 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
         eventMonitor.observe(resultObservable);
 
 
-        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Activity->Fragment"))
-                                .exists());
+        eventMonitor.checkThat("There is no Activity->Fragment callback",
+                anEventThat(isCallbackEvent("Activity->Fragment"))
+                    .exists());
 
-        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Fragment->Activity"))
-                                .exists());
+        eventMonitor.checkThat("There is no Fragment->Activity callback",
+                anEventThat(isCallbackEvent("Fragment->Activity"))
+                    .exists());
 
-        eventMonitor.checkThat(anEventThat(TextChangeEvent.isTextChangeEvent(resultView, is(equalTo("Completed!"))))
-                                .exists());
+        eventMonitor.checkThat("The result view is never updated!",
+                anEventThat(isTextChangeEvent(resultView, is(equalTo("Completed!"))))
+                    .exists());
 
-        eventMonitor.checkThat(anEventThat(CallbackEvent.isCallbackEvent("Activity->Fragment"))
-                                .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
+        eventMonitor.checkThat("The callback Activity->Fragment happens after the result is written",
+                anEventThat(isCallbackEvent("Activity->Fragment"))
+                    .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
     }
 
     @Override

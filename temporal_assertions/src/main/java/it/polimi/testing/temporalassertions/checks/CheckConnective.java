@@ -17,11 +17,12 @@ public abstract class CheckConnective extends Check
 
     /**
      * Constructor
+     * @param description a description of the check
      * @param checks the checks contained in this connective
      */
-    CheckConnective(Check... checks)
+    CheckConnective(String description, Check... checks)
     {
-        super(null);
+        super(description, null);
 
         this.checks = checks;
     }

@@ -2,7 +2,7 @@ package it.polimi.testing.temporalassertions.checks;
 
 /**
  * Connective that allows to express a logical biconditional (double implication) between two checks:
- * it returns SUCCESS only if both succeed or both fail
+ * it returns SUCCESS only if both fail or both do not fail (i.e. success or warning)
  *
  * C1 <==> C2
  */
@@ -15,7 +15,7 @@ public class IfAndOnlyIf extends CheckConnective
      */
     public IfAndOnlyIf(Check firstCheck, Check secondCheck)
     {
-        super(firstCheck, secondCheck);
+        super("("+firstCheck+") IF AND ONLY IF ("+secondCheck+")", firstCheck, secondCheck);
     }
 
     /**
@@ -49,13 +49,13 @@ public class IfAndOnlyIf extends CheckConnective
                 // Success if both failed
                 if(firstIsFailure && secondIsFailure)
                 {
-                    return new Result(Outcome.SUCCESS, "Both conditions didn't hold");
+                    return new Result(Outcome.SUCCESS, "Both conditions didn't hold: "+results[0].getReport()+"; "+results[1].getReport());
                 }
 
                 // Success if both didn't fail
                 else if(!firstIsFailure && !secondIsFailure)
                 {
-                    return new Result(Outcome.SUCCESS, "Both conditions held");
+                    return new Result(Outcome.SUCCESS, "Both conditions held: "+results[0].getReport()+"; "+results[1].getReport());
                 }
 
                 // Failure if one fails and the other does not
@@ -63,11 +63,11 @@ public class IfAndOnlyIf extends CheckConnective
                 {
                     if(firstIsFailure)
                     {
-                        return new Result(Outcome.FAILURE, "First didn't hold but second did");
+                        return new Result(Outcome.FAILURE, "We have that '"+results[1].getReport()+"' but '"+results[0].getReport()+"'");
                     }
                     else
                     {
-                        return new Result(Outcome.FAILURE, "First held but second didn't");
+                        return new Result(Outcome.FAILURE, "We have that '"+results[0].getReport()+"' but '"+results[1].getReport()+"'");
                     }
                 }
             }

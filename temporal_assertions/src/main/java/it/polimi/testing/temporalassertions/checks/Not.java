@@ -1,8 +1,10 @@
 package it.polimi.testing.temporalassertions.checks;
 
 /**
- * Connective that allows to invert a check result: it returns SUCCESS only if the
- * internal check fails
+ * Connective that allows to invert a check result: it changes the internal check outcome in the following way:
+ * - SUCCESS -> FAILURE
+ * - WARNING -> WARNING
+ * - FAILURE -> SUCCESS
  *
  * !C
  */
@@ -14,12 +16,14 @@ public class Not extends CheckConnective
      */
     private Not(Check check)
     {
-        super(check);
+        super("NOT TRUE THAT ("+check+")", check);
     }
 
     /**
-     * Connective that allows to invert a check result: it returns SUCCESS only if the
-     * internal check fails
+     * Connective that allows to invert a check result: it changes the internal check outcome in the following way:
+     * - SUCCESS -> FAILURE
+     * - WARNING -> WARNING
+     * - FAILURE -> SUCCESS
      * @param check the check to be inverted
      * @return the inverted check: !C
      */
@@ -48,9 +52,20 @@ public class Not extends CheckConnective
             @Override
             Result getFinalResult()
             {
-                // Simply invert the outcome
-                Outcome outcome = Outcome.FAILURE.equals(received.getOutcome()) ? Outcome.SUCCESS : Outcome.FAILURE;
-                return new Result(outcome, received.getMessage());
+                // Invert the outcome
+                Outcome outcome;
+                switch(received.getOutcome())
+                {
+                    case FAILURE:
+                        outcome = Outcome.SUCCESS;
+                        break;
+                    case SUCCESS:
+                        outcome = Outcome.FAILURE;
+                        break;
+                    default:
+                        outcome = Outcome.WARNING;
+                }
+                return new Result(outcome, received.getReport());
             }
         };
     }

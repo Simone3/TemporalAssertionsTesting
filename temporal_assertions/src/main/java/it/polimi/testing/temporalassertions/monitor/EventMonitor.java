@@ -11,6 +11,7 @@ import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.operators.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
@@ -42,8 +43,6 @@ public class EventMonitor
      */
     private EventMonitor()
     {
-        System.out.println("[...MONITOR...] Created");
-
         state = State.STOPPED;
     }
 
@@ -53,8 +52,6 @@ public class EventMonitor
      */
     public static synchronized EventMonitor getInstance()
     {
-        System.out.println("[...MONITOR...] Get instance "+instance);
-
         if(instance==null) instance = new EventMonitor();
         return instance;
     }
@@ -67,8 +64,6 @@ public class EventMonitor
     {
         if(isStopped())
         {
-            System.out.println("[...MONITOR...] Initialized");
-
             state = State.INITIALIZED;
 
             setupInternalListener();
@@ -85,8 +80,6 @@ public class EventMonitor
     {
         if(isInitialized())
         {
-            System.out.println("[...MONITOR...] Started verification");
-
             state = State.VERIFYING;
 
             initializeSubject();
@@ -105,8 +98,6 @@ public class EventMonitor
     {
         if(isInitialized())
         {
-            System.out.println("[...MONITOR...] Added observable "+observable);
-
             if(merged==null) merged = observable;
             else merged = Observable.merge(merged, observable);
         }
@@ -135,14 +126,14 @@ public class EventMonitor
      * Allows to add a consistency check that will have to hold in the monitored stream. The checks can be
      * added in any order.. This method can be called only after {@link EventMonitor#initialize()} and before
      * {@link EventMonitor#startVerification(Subscriber, Subscriber)}
+     * @param failureMessage the identifying message for the check in case of failure
      * @param check the consistency check to be added
      */
-    public void checkThat(Check check)
+    public void checkThat(String failureMessage, Check check)
     {
         if(isInitialized())
         {
-            System.out.println("[...MONITOR...] Added check "+check);
-
+            check.setUserFailureMessage(failureMessage);
             checks.add(check);
         }
     }
@@ -154,8 +145,6 @@ public class EventMonitor
      */
     public void stopVerification()
     {
-        System.out.println("[...MONITOR...] Stop verification");
-
         if(isVerifying() && subject!=null) subject.onCompleted();
 
         state = State.STOPPED;
@@ -205,10 +194,22 @@ public class EventMonitor
 
         // Apply "EnforceCheck" operator for each check and merge the returned observables
         Observable<Result> resultsObservable = Observable.empty();
-        for(Check check: checks)
+        Observable<Result> singleResultObservable;
+        for(final Check check: checks)
         {
-            System.out.println("[...MONITOR...] Lifted check "+check);
-            resultsObservable = Observable.merge(resultsObservable, subject.lift(new EnforceCheck<>(check)));
+            singleResultObservable = subject.lift(new EnforceCheck<>(check))
+                                            .map(new Func1<Result, Result>()
+                                            {
+                                                @Override
+                                                public Result call(Result result)
+                                                {
+                                                    result.setLinkedCheckDescription(check.getDescription());
+                                                    result.setUserFailureMessage(check.getUserFailureMessage());
+                                                    return result;
+                                                }
+                                            });
+
+            resultsObservable = Observable.merge(resultsObservable, singleResultObservable);
         }
         checks.clear();
 
@@ -250,8 +251,6 @@ public class EventMonitor
      */
     private void setupEventsSubscriber(Subscriber<? super Event> eventsSubscriber)
     {
-        System.out.println("[...MONITOR...] Set subscriber");
-
         // Get default subscriber if needed
         if(eventsSubscriber==null)
         {
@@ -300,8 +299,6 @@ public class EventMonitor
      */
     private void initializeSubject()
     {
-        System.out.println("[...MONITOR...] Build subject");
-
         subject = ReplaySubject.<Event>create();
         merged.subscribe(subject);
     }

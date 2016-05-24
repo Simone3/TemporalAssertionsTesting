@@ -31,10 +31,13 @@ public class CallbackEvent extends Event
         return callbackName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {
-        return "Callback "+callbackName;
+        return "{Callback '"+callbackName+"'}";
     }
 
     /**
@@ -44,7 +47,7 @@ public class CallbackEvent extends Event
      */
     public static Matcher<CallbackEvent> isCallbackEvent(String callbackName)
     {
-        return new FeatureMatcher<CallbackEvent, String>(equalTo(callbackName), "is the callback event", "")
+        return new FeatureMatcher<CallbackEvent, String>(equalTo(callbackName), "is the callback event", "callback name")
         {
             @Override
             protected String featureValueOf(final CallbackEvent actual)
@@ -60,7 +63,7 @@ public class CallbackEvent extends Event
      */
     public static Matcher<CallbackEvent> isCallbackEvent()
     {
-        return new FeatureMatcher<CallbackEvent, String>(anything(), "is a callback event", "")
+        return new FeatureMatcher<CallbackEvent, String>(anything(""), "is any callback event", "")
         {
             @Override
             protected String featureValueOf(final CallbackEvent actual)

@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Lifecycle change event for fragments
  */
-public class FragmentLifecycleEvent extends LifecycleEvent
+public class FragmentLifecycleEvent extends CallbackEvent
 {
     private final Class<? extends Fragment> fragmentClass;
 
@@ -24,7 +24,7 @@ public class FragmentLifecycleEvent extends LifecycleEvent
      */
     public FragmentLifecycleEvent(Class<? extends Fragment> fragmentClass, String callbackName)
     {
-        super("Fragment", callbackName);
+        super(callbackName);
         this.fragmentClass = fragmentClass;
     }
 
@@ -35,6 +35,15 @@ public class FragmentLifecycleEvent extends LifecycleEvent
     public Class<? extends Fragment> getFragmentClass()
     {
         return fragmentClass;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "{"+fragmentClass.getSimpleName()+" Lifecycle '"+getCallbackName()+"'}";
     }
 
     /**
@@ -55,7 +64,7 @@ public class FragmentLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent(final String callbackName)
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, String>(equalTo(callbackName), "is a fragment lifecycle event", "")
+        return new FeatureMatcher<FragmentLifecycleEvent, String>(equalTo(callbackName), "is a fragment lifecycle event", "callback name")
         {
             @Override
             protected String featureValueOf(final FragmentLifecycleEvent actual)
@@ -72,7 +81,7 @@ public class FragmentLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent(final Class<? extends Fragment> fragmentClass)
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, Class<? extends Fragment>>(IsEqual.<Class<? extends Fragment>>equalTo(fragmentClass), "is a fragment lifecycle event from", "")
+        return new FeatureMatcher<FragmentLifecycleEvent, Class<? extends Fragment>>(IsEqual.<Class<? extends Fragment>>equalTo(fragmentClass), "is a fragment lifecycle event from", "fragment class")
         {
             @Override
             protected Class<? extends Fragment> featureValueOf(final FragmentLifecycleEvent actual)
@@ -88,7 +97,7 @@ public class FragmentLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent()
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, String>(anything(), "is a fragment lifecycle event", "")
+        return new FeatureMatcher<FragmentLifecycleEvent, String>(anything(""), "is any fragment lifecycle event", "")
         {
             @Override
             protected String featureValueOf(final FragmentLifecycleEvent actual)

@@ -35,9 +35,9 @@ public class EventMonitorTest
     {
         EventMonitor eventMonitor = EventMonitor.getInstance();
 
-        eventMonitor.checkThat(alwaysSuccessCheck());
-        eventMonitor.checkThat(alwaysFailureCheck());
-        eventMonitor.checkThat(alwaysSuccessCheck());
+        eventMonitor.checkThat("", alwaysSuccessCheck());
+        eventMonitor.checkThat("", alwaysFailureCheck());
+        eventMonitor.checkThat("", alwaysSuccessCheck());
         //eventMonitor.checkThat(allEventsWhereEach(isA(Event.class)).are(exactly(expectedEvents)));
     }
 

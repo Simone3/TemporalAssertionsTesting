@@ -21,7 +21,8 @@ public class ProvidedThat
 
     /**
      * Allows to build the first part of a material conditional (single implication) between two checks.
-     * The check passed to {@link ProvidedThat#then(Check)} will be evaluated onl if this check does not fail
+     * The check passed to {@link ProvidedThat#then(Check)} will be evaluated only if this check does not fail
+     * (i.e. success or warning)
      *
      * C1 => C2
      *

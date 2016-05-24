@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Lifecycle change event for activities
  */
-public class ActivityLifecycleEvent extends LifecycleEvent
+public class ActivityLifecycleEvent extends CallbackEvent
 {
     private final Class<? extends Activity> activityClass;
 
@@ -24,7 +24,7 @@ public class ActivityLifecycleEvent extends LifecycleEvent
      */
     public ActivityLifecycleEvent(Class<? extends Activity> activityClass, String callbackName)
     {
-        super("Activity", callbackName);
+        super(callbackName);
         this.activityClass = activityClass;
     }
 
@@ -35,6 +35,15 @@ public class ActivityLifecycleEvent extends LifecycleEvent
     public Class<? extends Activity> getActivityClass()
     {
         return activityClass;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "{"+activityClass.getSimpleName()+" Lifecycle '"+getCallbackName()+"'}";
     }
 
     /**
@@ -55,7 +64,7 @@ public class ActivityLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<ActivityLifecycleEvent> isActivityLifecycleEvent(final String callbackName)
     {
-        return new FeatureMatcher<ActivityLifecycleEvent, String>(equalTo(callbackName), "is an activity lifecycle event", "")
+        return new FeatureMatcher<ActivityLifecycleEvent, String>(equalTo(callbackName), "is an activity lifecycle event", "callback name")
         {
             @Override
             protected String featureValueOf(final ActivityLifecycleEvent actual)
@@ -72,7 +81,7 @@ public class ActivityLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<ActivityLifecycleEvent> isActivityLifecycleEvent(final Class<? extends Activity> activityClass)
     {
-        return new FeatureMatcher<ActivityLifecycleEvent, Class<? extends Activity>>(IsEqual.<Class<? extends Activity>>equalTo(activityClass), "is an activity lifecycle event from", "")
+        return new FeatureMatcher<ActivityLifecycleEvent, Class<? extends Activity>>(IsEqual.<Class<? extends Activity>>equalTo(activityClass), "is an activity lifecycle event from", "activity class")
         {
             @Override
             protected Class<? extends Activity> featureValueOf(final ActivityLifecycleEvent actual)
@@ -88,7 +97,7 @@ public class ActivityLifecycleEvent extends LifecycleEvent
      */
     public static Matcher<ActivityLifecycleEvent> isActivityLifecycleEvent()
     {
-        return new FeatureMatcher<ActivityLifecycleEvent, String>(anything(), "is an activity lifecycle event", "")
+        return new FeatureMatcher<ActivityLifecycleEvent, String>(anything(""), "is any activity lifecycle event", "")
         {
             @Override
             protected String featureValueOf(final ActivityLifecycleEvent actual)

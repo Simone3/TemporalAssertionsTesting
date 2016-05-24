@@ -3,6 +3,7 @@ package it.polimi.testing.temporalassertions.descriptors;
 
 import org.hamcrest.Matcher;
 
+import it.polimi.testing.temporalassertions.Utils;
 import it.polimi.testing.temporalassertions.checks.Check;
 import it.polimi.testing.temporalassertions.checks.CheckSubscriber;
 import it.polimi.testing.temporalassertions.checks.Outcome;
@@ -43,47 +44,49 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
      */
     public Check are(final AbstractQuantifier quantifier)
     {
-        return new Check(new CheckSubscriber()
-        {
-            @Override
-            public void onNext(Event event)
-            {
-                // If the event matches...
-                if(getMatcher().matches(event))
-                {
-                    // Increase counter
-                    quantifier.increaseCounter();
+        return new Check(
+                "All events where each "+getMatcher()+" are "+quantifier.getDescription(),
 
-                    // Check if we can short-circuit the computation
-                    if(quantifier.canStopCurrentComputation())
+                new CheckSubscriber()
+                {
+                    @Override
+                    public void onNext(Event event)
                     {
-                        endCheck();
+                        // If the event matches...
+                        if(getMatcher().matches(event))
+                        {
+                            // Increase counter
+                            quantifier.increaseCounter();
+
+                            // Check if we can short-circuit the computation
+                            if(quantifier.canStopCurrentComputation())
+                            {
+                                endCheck();
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public Result getFinalResult()
-            {
-                Outcome outcome;
-                String report;
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        Outcome outcome;
+                        String report;
 
-                // Success if the quantifier's condition is met
-                if(quantifier.isConditionMet())
-                {
-                    outcome = Outcome.SUCCESS;
-                    report = "All events where each "+getMatcher()+" were "+quantifier.getDescription();
-                }
+                        // Success if the quantifier's condition is met
+                        if(quantifier.isConditionMet())
+                        {
+                            outcome = Outcome.SUCCESS;
+                        }
 
-                // Failure otherwise
-                else
-                {
-                    outcome = Outcome.FAILURE;
-                    report = "Found "+quantifier.describeError()+" events where each "+getMatcher();
-                }
-                return new Result(outcome, report);
-            }
-        });
+                        // Failure otherwise
+                        else
+                        {
+                            outcome = Outcome.FAILURE;
+                        }
+                        report = "Events were "+quantifier.getCounter();
+                        return new Result(outcome, report);
+                    }
+                });
     }
 
     /**
@@ -96,62 +99,85 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
     @SafeVarargs
     public final Check matchInOrder(final Matcher<? extends Event>... matchers)
     {
-        return new Check(new CheckSubscriber()
-        {
-            private int i = 0;
-            private Event event;
+        return new Check(
+                "All events where each "+getMatcher()+" satisfy in order "+Utils.arrayToString(matchers),
 
-            @Override
-            public void onNext(Event event)
-            {
-                // If we have a match...
-                if(getMatcher().matches(event))
+                new CheckSubscriber()
                 {
-                    // If we are in a valid situation and the current event matches the current matcher, simply increase the index
-                    if(i<matchers.length && matchers[i].matches(event))
+                    private int i = 0;
+                    private boolean oneDoesNotMatch = false;
+                    private Event event;
+
+                    @Override
+                    public void onNext(Event event)
                     {
-                        i++;
+                        // If we have a match...
+                        if(getMatcher().matches(event))
+                        {
+                            // If we are in a valid situation...
+                            if(i<matchers.length)
+                            {
+                                // If the current event matches the current matcher, simply increase the index
+                                if(matchers[i].matches(event)) i++;
+
+                                // Otherwise (no match), short-circuit
+                                else
+                                {
+                                    oneDoesNotMatch = true;
+                                    this.event = event;
+                                    endCheck();
+                                }
+                            }
+
+                            // Otherwise (too many events)
+                            else
+                            {
+                                i++;
+                                this.event = event;
+                                endCheck();
+                            }
+                        }
                     }
 
-                    // Otherwise (does not match or we went beyond the matchers length), short-circuit
-                    else
+                    @Override
+                    public Result getFinalResult()
                     {
-                        if(i>=matchers.length) i++;
-                        this.event = event;
-                        endCheck();
+                        Outcome outcome;
+                        String report;
+
+                        // Success, if we found exactly "matchers.length" events and they matched in order
+                        if(i==matchers.length)
+                        {
+                            outcome = Outcome.SUCCESS;
+                            report = "All satisfied in order";
+                        }
+
+                        // Failure if...
+                        else
+                        {
+                            outcome = Outcome.FAILURE;
+
+                            // We found more events than #matchers
+                            if(i>matchers.length)
+                            {
+                                report = "The events satisfied in order the given matchers but an extra event "+event+" was found afterwards";
+                            }
+
+                            // One event did not match
+                            else if(oneDoesNotMatch)
+                            {
+                                report = "The event "+event+" does not match '"+matchers[i]+"'";
+                            }
+
+                            // We found less events that #matchers
+                            else
+                            {
+                                report = "The events were not enough to satisfy all matchers: no event satisfied '"+matchers[i]+"'";
+                            }
+                        }
+
+                        return new Result(outcome, report);
                     }
-                }
-            }
-
-            @Override
-            public Result getFinalResult()
-            {
-                Outcome outcome;
-                String report;
-
-                // Success, if we found exactly "matchers.length" events and they matched in order
-                if(i==matchers.length)
-                {
-                    outcome = Outcome.SUCCESS;
-                    report = "All events where each "+getMatcher()+" satisfied in order the given matchers";
-                }
-
-                // Failure, if we found more events than #matchers
-                else if(i>matchers.length)
-                {
-                    outcome = Outcome.FAILURE;
-                    report = "The events where each "+getMatcher()+" satisfied in order the given matchers but an extra event "+event+" was found afterwards";
-                }
-
-                // Failure, if we found less events than #matchers or one did not match in order
-                else
-                {
-                    outcome = Outcome.FAILURE;
-                    report = "The event "+event+" does not match "+matchers[i];
-                }
-
-                return new Result(outcome, report);
-            }
-        });
+                });
     }
 }

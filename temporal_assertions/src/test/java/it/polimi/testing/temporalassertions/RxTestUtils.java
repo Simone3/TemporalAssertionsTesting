@@ -15,8 +15,11 @@ import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.operators.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 
+import static it.polimi.testing.temporalassertions.events.GenericEvent.isGenericEventWithObjects;
+import static it.polimi.testing.temporalassertions.events.GenericEvent.isGenericEventWithObjectsThatMatch;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -59,7 +62,7 @@ public abstract class RxTestUtils
      */
     public static Matcher<GenericEvent> is(String string)
     {
-        return GenericEvent.isGenericEventWithObjects(string);
+        return isGenericEventWithObjects(string);
     }
 
     /**
@@ -69,7 +72,7 @@ public abstract class RxTestUtils
      */
     public static Matcher<GenericEvent> starts(String string)
     {
-        return GenericEvent.isGenericEventWithObjectsThatMatch(generalStringMatcher(startsWith(string)));
+        return isGenericEventWithObjectsThatMatch(generalStringMatcher(startsWith(string)));
     }
 
     /**
@@ -79,7 +82,7 @@ public abstract class RxTestUtils
      */
     public static Matcher<GenericEvent> ends(String string)
     {
-        return GenericEvent.isGenericEventWithObjectsThatMatch(generalStringMatcher(endsWith(string)));
+        return isGenericEventWithObjectsThatMatch(generalStringMatcher(endsWith(string)));
     }
 
     /**
@@ -111,10 +114,19 @@ public abstract class RxTestUtils
      * @param check the check to be applied
      * @param outcome the expected outcome
      */
-    public static void assertThatOutcomeIs(String[] events, Check check, final Outcome outcome)
+    public static void assertThatOutcomeIs(String[] events, final Check check, final Outcome outcome)
     {
         Observable<? extends Event> observable = generateEvents(events);
-        Observable<Result> resultObservable = observable.lift(new EnforceCheck<>(check));
+        Observable<Result> resultObservable = observable.lift(new EnforceCheck<>(check)).map(new Func1<Result, Result>()
+        {
+            @Override
+            public Result call(Result result)
+            {
+                result.setLinkedCheckDescription(check.getDescription());
+                result.setUserFailureMessage("This is the failure message");
+                return result;
+            }
+        });
 
         TestSubscriber<Result> testSubscriber = new TestSubscriber<>();
         resultObservable.subscribe(testSubscriber);
@@ -122,15 +134,18 @@ public abstract class RxTestUtils
         testSubscriber.assertNoErrors();
         List<Result> results = testSubscriber.getOnNextEvents();
 
-        assertNotNull("Results list is null!", results);
+        assertNotNull("Results list is null", results);
 
-        assertEquals("Received more than one result!", 1, results.size());
+        assertEquals("Received more than one result", 1, results.size());
 
         Result result = results.get(0);
 
-        assertNotNull("Result is null!", result);
+        assertNotNull("Result is null", result);
 
-        assertEquals("Test failed, report is '"+result.getMessage()+"'", outcome, result.getOutcome());
+        System.out.println(result);
+        System.out.println();
+
+        assertEquals("The outcome is wrong", outcome, result.getOutcome());
     }
 
     /**
@@ -139,7 +154,7 @@ public abstract class RxTestUtils
      */
     public static Check alwaysSuccessCheck()
     {
-        return new Check(new CheckSubscriber()
+        return new Check("Always succeeds", new CheckSubscriber()
         {
             @Override
             public Result getFinalResult()
@@ -161,7 +176,7 @@ public abstract class RxTestUtils
      */
     public static Check alwaysFailureCheck()
     {
-        return new Check(new CheckSubscriber()
+        return new Check("Always fails", new CheckSubscriber()
         {
             @Override
             public Result getFinalResult()
@@ -183,7 +198,7 @@ public abstract class RxTestUtils
      */
     public static Check alwaysWarningCheck()
     {
-        return new Check(new CheckSubscriber()
+        return new Check("Always warns", new CheckSubscriber()
         {
             @Override
             public Result getFinalResult()

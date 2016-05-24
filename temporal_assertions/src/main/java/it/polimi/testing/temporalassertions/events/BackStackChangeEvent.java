@@ -27,4 +27,15 @@ public class BackStackChangeEvent extends Event
     {
         return fragmentManager;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+        return "{}";//TODO
+    }
+
+    // TODO add matchers
 }

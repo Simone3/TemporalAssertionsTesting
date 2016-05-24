@@ -5,7 +5,10 @@ import android.view.View;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 
+import it.polimi.testing.temporalassertions.Utils;
+
 import static org.hamcrest.CoreMatchers.both;
+import static org.hamcrest.CoreMatchers.describedAs;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -46,10 +49,13 @@ public class TextChangeEvent extends Event
         return text;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {
-        return "TC '"+text+"' from "+view;
+        return "{Text change '"+text+"' from "+Utils.describeView(view)+"}";
     }
 
     /**
@@ -70,7 +76,7 @@ public class TextChangeEvent extends Event
      */
     public static Matcher<TextChangeEvent> isTextChangeEventFrom(final View view)
     {
-        return new FeatureMatcher<TextChangeEvent, View>(equalTo(view), "is a text change event whose view", "view")
+        return new FeatureMatcher<TextChangeEvent, View>(describedAs(Utils.describeView(view), equalTo(view)), "is a text change event from", "view")
         {
             @Override
             protected View featureValueOf(final TextChangeEvent actual)
@@ -87,7 +93,7 @@ public class TextChangeEvent extends Event
      */
     public static Matcher<TextChangeEvent> isTextChangeEventWhereTextMatches(final Matcher<String> matcher)
     {
-        return new FeatureMatcher<TextChangeEvent, String>(matcher, "is a text change event whose text", "text")
+        return new FeatureMatcher<TextChangeEvent, String>(matcher, "is a text change event with text that is", "text")
         {
             @Override
             protected String featureValueOf(final TextChangeEvent actual)
@@ -103,7 +109,7 @@ public class TextChangeEvent extends Event
      */
     public static Matcher<TextChangeEvent> isTextChangeEvent()
     {
-        return new FeatureMatcher<TextChangeEvent, String>(anything(), "is a text change event", "")
+        return new FeatureMatcher<TextChangeEvent, String>(anything(""), "is any text change event", "")
         {
             @Override
             protected String featureValueOf(final TextChangeEvent actual)

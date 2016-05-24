@@ -22,7 +22,7 @@ public class WeHaveThat
     /**
      * Allows to build the first part of a logical biconditional (double implication) between two checks.
      * The check succeeds only if this check and the one passed to {@link WeHaveThat#ifAndOnlyIf(Check)}
-     * both succeed or both fail
+     * both fail or both do not fail (i.e. success or warning)
      *
      * C1 <==> C2
      *
@@ -37,8 +37,8 @@ public class WeHaveThat
     /**
      * Allows to build the second part of a logical biconditional (double implication)
      * @param check the check in the right side of the double implication
-     * @return the check will return SUCCESS if the checks both fail or both succeed,
-     *         FAILURE otherwise
+     * @return the check will return SUCCESS if the checks both fail or both do not fail
+     *         (i.e. success or warning), FAILURE otherwise
      */
     public Check ifAndOnlyIf(Check check)
     {

@@ -1,8 +1,10 @@
 package it.polimi.testing.temporalassertions.checks;
 
+import it.polimi.testing.temporalassertions.Utils;
+
 /**
  * Connective that allows to express a logic AND between two or more checks: it returns SUCCESS only if all
- * internal checks do not fail
+ * internal checks do not fail (i.e. success or warning)
  *
  * C1 && C2 && ...
  */
@@ -14,12 +16,12 @@ public class AllHold extends CheckConnective
      */
     private AllHold(Check... checks)
     {
-        super(checks);
+        super("("+Utils.join(") AND (", checks)+")", checks);
     }
 
     /**
      * Expresses a logic AND between two or more checks: it will return SUCCESS only if all
-     * internal checks do not fail
+     * internal checks do not fail (i.e. success or warning)
      * @param checks the internal checks
      * @return the logic AND check: C1 && C2 && ...
      */
@@ -37,6 +39,8 @@ public class AllHold extends CheckConnective
         return new ResultsSubscriber()
         {
             private boolean oneFailed = false;
+            private String reportsListForSuccess = "";
+            private String failedReport;
 
             @Override
             Result getFinalResult()
@@ -44,11 +48,11 @@ public class AllHold extends CheckConnective
                 // Failure if one of the checks failed
                 if(oneFailed)
                 {
-                    return new Result(Outcome.FAILURE, "One failed!");
+                    return new Result(Outcome.FAILURE, failedReport);
                 }
                 else
                 {
-                    return new Result(Outcome.SUCCESS, "Ok!");
+                    return new Result(Outcome.SUCCESS, reportsListForSuccess);
                 }
             }
 
@@ -59,8 +63,11 @@ public class AllHold extends CheckConnective
                 if(Outcome.FAILURE.equals(result.getOutcome()))
                 {
                     oneFailed = true;
+                    failedReport = result.getReport();
                     return false;
                 }
+
+                reportsListForSuccess += ("".equals(reportsListForSuccess) ? "" : "; ")+result.getReport();
 
                 return true;
             }

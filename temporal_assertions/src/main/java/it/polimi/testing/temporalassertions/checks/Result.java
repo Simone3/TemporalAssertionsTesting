@@ -6,17 +6,20 @@ package it.polimi.testing.temporalassertions.checks;
 public class Result
 {
     private Outcome outcome;
-    private String message;
+    private String report;
+
+    private String userFailureMessage;
+    private String linkedCheckDescription;
 
     /**
      * Constructor
      * @param outcome the outcome of the check
-     * @param message a message describing the result
+     * @param report a message describing the result
      */
-    public Result(Outcome outcome, String message)
+    public Result(Outcome outcome, String report)
     {
         this.outcome = outcome;
-        this.message = message;
+        this.report = report;
     }
 
     /**
@@ -32,14 +35,36 @@ public class Result
      * Getter
      * @return a message describing the result
      */
-    public String getMessage()
+    public String getReport()
     {
-        return message;
+        return report;
     }
 
+    /**
+     * Setter
+     * @param userFailureMessage the message provided by the user to be displayed in case of failure
+     */
+    public void setUserFailureMessage(String userFailureMessage)
+    {
+        this.userFailureMessage = userFailureMessage;
+    }
+
+    /**
+     * Setter
+     * @param checkDescription the description of the check that originated this result
+     */
+    public void setLinkedCheckDescription(String checkDescription)
+    {
+        this.linkedCheckDescription = checkDescription;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {
-        return "["+outcome.name()+"] "+getMessage();
+        String failureMessage = Outcome.FAILURE.equals(outcome) ? "      ERROR: "+userFailureMessage+"\n" : "";
+        return "["+outcome.name()+"] "+linkedCheckDescription+"\n"+failureMessage+"      REPORT: "+getReport();
     }
 }

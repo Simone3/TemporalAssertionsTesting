@@ -6,7 +6,10 @@ import org.hamcrest.Matcher;
 import java.util.Arrays;
 import java.util.List;
 
+import it.polimi.testing.temporalassertions.Utils;
+
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.describedAs;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Every.everyItem;
 
@@ -35,29 +38,16 @@ public class GenericEvent extends Event
         return objects;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString()
     {
-        return "GE with objects "+arrayToString(objects);
+        return "{Generic with objects "+Utils.arrayToString(objects)+"}";
     }
 
-    private static String arrayToString(Object[] array)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i=0; i<array.length; i++)
-        {
-            sb.append("\"");
-            sb.append(array[i]);
-            sb.append("\"");
-            if(i!=array.length-1)
-            {
-                sb.append(", ");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
+
 
     /**
      * Hamcrest matcher that matches a generic event with the given object in order
@@ -83,7 +73,7 @@ public class GenericEvent extends Event
      */
     public static Matcher<GenericEvent> isGenericEventWithObjectsThatMatch(final Matcher<Object> matcher)
     {
-        return new FeatureMatcher<GenericEvent, List<Object>>(everyItem(matcher), "is a generic event with objects that match", "objects")
+        return new FeatureMatcher<GenericEvent, List<Object>>(describedAs("'"+matcher.toString()+"'", everyItem(matcher)), "is a generic event with objects that match", "objects")
         {
             @Override
             protected List<Object> featureValueOf(final GenericEvent actual)
@@ -99,7 +89,7 @@ public class GenericEvent extends Event
      */
     public static Matcher<GenericEvent> isGenericEvent()
     {
-        return new FeatureMatcher<GenericEvent, Object[]>(anything(), "is a generic event", "")
+        return new FeatureMatcher<GenericEvent, Object[]>(anything(""), "is any generic event", "")
         {
             @Override
             protected Object[] featureValueOf(final GenericEvent actual)
