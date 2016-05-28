@@ -4,6 +4,7 @@ package it.polimi.testing.simple_example_app;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +43,8 @@ public class RxExampleFragment extends Fragment
 
     private final static long TOTAL_COUNT_DOWN = 10000;
     private long currentCountDownValue = TOTAL_COUNT_DOWN;
-    private CountDownTimer countDownTimer;
+    @VisibleForTesting
+    CountDownTimer countDownTimer;
     private boolean countDownStarted = false;
     private int rand = 123;
 
@@ -151,7 +153,11 @@ public class RxExampleFragment extends Fragment
             public void onTick(long millisUntilFinished)
             {
                 currentCountDownValue = millisUntilFinished;
-                countDownView.setText("seconds remaining: " + millisUntilFinished / 1000);
+                int seconds = Math.round(millisUntilFinished / 1000);
+                if(seconds==10) return;
+                String newText = "seconds remaining: " + seconds;
+                if(newText.equals(countDownView.getText().toString())) return;
+                countDownView.setText(newText);
             }
 
             public void onFinish()
@@ -250,7 +256,11 @@ public class RxExampleFragment extends Fragment
 
     private void monitorStartVerification()
     {
-        EventMonitor.getInstance().startVerification(null, null);
+        // Only log results
+        // [Uncomment for runtime monitoring] EventMonitor.getInstance().startVerification(null, null);
+
+        // Crash if a result fails (AssertionError)
+        //EventMonitor.getInstance().startVerification(null, EventMonitor.getAssertionErrorResultsSubscriber());
     }
 }
 

@@ -1,6 +1,7 @@
 package it.polimi.testing.simple_example_app;
 
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 public class RxExampleActivity extends AppCompatActivity implements RxExampleFragment.OnCountDownEnded
 {
-    private RxExampleFragment fragment;
+    @VisibleForTesting
+    RxExampleFragment fragment;
     private TextView resultView;
 
     @Override
@@ -34,7 +36,8 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_example);
 
-        EventMonitor.getInstance().initialize();
+        // [Uncomment for runtime monitoring] EventMonitor.getInstance().initialize();
+
         EventMonitor.getInstance().fireCustomEvent(new ActivityLifecycleEvent(RxExampleActivity.class, "onCreate"));
 
         if(findViewById(R.id.fragment_container)!=null)
@@ -121,7 +124,7 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
     @Override
     public void onDestroy()
     {
-        EventMonitor.getInstance().stopVerification();
+        // [Uncomment for runtime monitoring] EventMonitor.getInstance().stopVerification();
 
         super.onDestroy();
     }

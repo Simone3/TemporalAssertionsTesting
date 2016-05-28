@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.testing.temporalassertions.checks.Check;
+import it.polimi.testing.temporalassertions.checks.Outcome;
 import it.polimi.testing.temporalassertions.checks.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.operators.EnforceCheck;
@@ -14,13 +15,22 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
 /**
  * This is the main interface of the library. It allows to register observables to build the event stream,
- * to add consistency checks on the events and to receive the results of the analysis
+ * to add consistency checks on the events and to receive the results of the analysis.
+ *
+ * The monitor can be in three states:
+ * - initialized (the monitor is ready and can receive observables and checks)
+ * - verifying (all observables and checks have been added and the monitor is now processing the stream)
+ * - stopped (the monitor is doing nothing and does not accept observables or checks)
+ * Any action (except the call to {@link EventMonitor#initialize()} of course) that is performed while the monitor
+ * is stopped has no effect on the system. This can for example be useful for debugging: if the call to {@code initialize()}
+ * is commented out the monitor will do nothing even if observables and checks are added.
  */
 public class EventMonitor
 {
@@ -77,9 +87,16 @@ public class EventMonitor
 
     /**
      * This method starts the verification on the stream, usually called for example during onCreate of a component.
-     * After this call it will not be possible to add further observables or consistency checks
-     * @param eventsSubscriber the subscriber that will receive in order all the events of the stream (if null the default subscriber will be used)
-     * @param resultsSubscriber the subscriber that will receive the results of the consistency checks (if null the default subscriber will be used)
+     * After this call it will not be possible to add further observables or consistency checks.
+     * @param eventsSubscriber the subscriber that will receive in order all the events of the stream. You can pass:
+     *                         - {@link EventMonitor#getLoggerEventsSubscriber()} or null to log all events in the console
+     *                         - {@link Subscribers#empty()} to do nothing
+     *                         - your own subscriber
+     * @param resultsSubscriber the subscriber that will receive the results of the consistency checks. You can pass:
+     *                          - {@link EventMonitor#getLoggerResultsSubscriber()} or null to log all results in the console
+     *                          - {@link EventMonitor#getAssertionErrorResultsSubscriber()} to make the app crash if a check fails
+     *                          - {@link Subscribers#empty()} to do nothing
+     *                          - your own subscriber
      */
     public void startVerification(@Nullable Subscriber<? super Event> eventsSubscriber, @Nullable Subscriber<Result> resultsSubscriber)
     {
@@ -193,7 +210,7 @@ public class EventMonitor
         // Get default subscriber if needed
         if(resultsSubscriber==null)
         {
-            resultsSubscriber = getDefaultResultsSubscriber();
+            resultsSubscriber = getLoggerResultsSubscriber();
         }
         this.resultsSubscriber = resultsSubscriber;
 
@@ -223,10 +240,11 @@ public class EventMonitor
     }
 
     /**
-     * Getter
-     * @return the default results subscriber
+     * A simple results subscriber that can be passed to {@link EventMonitor#startVerification(Subscriber, Subscriber)}.
+     * It just logs all the results in the console.
+     * @return the results subscriber
      */
-    private Subscriber<Result> getDefaultResultsSubscriber()
+    public static Subscriber<Result> getLoggerResultsSubscriber()
     {
         return new Subscriber<Result>()
         {
@@ -252,6 +270,49 @@ public class EventMonitor
     }
 
     /**
+     * A simple results subscriber that can be passed to {@link EventMonitor#startVerification(Subscriber, Subscriber)}.
+     * It logs results with WARNING outcome in the console and makes the application crash (AssertionError) if a FAILURE result is received
+     * @return the results subscriber
+     */
+    public static Subscriber<Result> getAssertionErrorResultsSubscriber()
+    {
+        return new Subscriber<Result>()
+        {
+            @Override
+            public void onCompleted()
+            {
+
+            }
+
+            @Override
+            public void onError(Throwable e)
+            {
+                if(e instanceof AssertionError)
+                {
+                    throw (AssertionError) e;
+                }
+                else
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNext(Result result)
+            {
+                if(Outcome.WARNING.equals(result.getOutcome()))
+                {
+                    Log.w(TAG, result.toString());
+                }
+                else if(Outcome.FAILURE.equals(result.getOutcome()))
+                {
+                    onError(new AssertionError(TAG+": "+result));
+                }
+            }
+        };
+    }
+
+    /**
      * This allows to set the subscriber that will receive all events in the stream
      * @param eventsSubscriber the subscriber that will receive the results of the consistency checks (if null the default subscriber will be used)
      */
@@ -260,7 +321,7 @@ public class EventMonitor
         // Get default subscriber if needed
         if(eventsSubscriber==null)
         {
-            eventsSubscriber = getDefaultEventsSubscriber();
+            eventsSubscriber = getLoggerEventsSubscriber();
         }
         this.subscriber = eventsSubscriber;
 
@@ -269,10 +330,11 @@ public class EventMonitor
     }
 
     /**
-     * Getter
-     * @return the default events subscriber
+     * A simple events subscriber that can be passed to {@link EventMonitor#startVerification(Subscriber, Subscriber)}.
+     * It just logs all events in the console.
+     * @return the results subscriber
      */
-    private Subscriber<? super Event> getDefaultEventsSubscriber()
+    public static Subscriber<? super Event> getLoggerEventsSubscriber()
     {
         return new Subscriber<Event>()
         {
