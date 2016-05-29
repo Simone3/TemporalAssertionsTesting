@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions;
+package it.polimi.testing.temporalassertions.core;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -6,13 +6,8 @@ import org.hamcrest.Matcher;
 
 import java.util.List;
 
-import it.polimi.testing.temporalassertions.core.Check;
-import it.polimi.testing.temporalassertions.core.CheckSubscriber;
-import it.polimi.testing.temporalassertions.core.Outcome;
-import it.polimi.testing.temporalassertions.core.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
-import it.polimi.testing.temporalassertions.core.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -154,20 +149,27 @@ public abstract class RxTestUtils
      */
     public static Check alwaysSuccessCheck()
     {
-        return new Check("Always succeeds", new CheckSubscriber()
+        class AlwaysSuccess extends Check
         {
-            @Override
-            public Result getFinalResult()
+            protected AlwaysSuccess()
             {
-                return new Result(Outcome.SUCCESS, "Always Success Report");
-            }
+                super("Always succeeds", new CheckSubscriber()
+                {
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        return new Result(Outcome.SUCCESS, "Always Success Report");
+                    }
 
-            @Override
-            public void onNext(Event event)
-            {
-                endCheck();
+                    @Override
+                    public void onNext(Event event)
+                    {
+                        endCheck();
+                    }
+                });
             }
-        });
+        }
+        return new AlwaysSuccess();
     }
 
     /**
@@ -176,20 +178,27 @@ public abstract class RxTestUtils
      */
     public static Check alwaysFailureCheck()
     {
-        return new Check("Always fails", new CheckSubscriber()
+        class AlwaysFail extends Check
         {
-            @Override
-            public Result getFinalResult()
+            protected AlwaysFail()
             {
-                return new Result(Outcome.FAILURE, "Always Failure Report");
-            }
+                super("Always fails", new CheckSubscriber()
+                {
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        return new Result(Outcome.FAILURE, "Always Failure Report");
+                    }
 
-            @Override
-            public void onNext(Event event)
-            {
-                endCheck();
+                    @Override
+                    public void onNext(Event event)
+                    {
+                        endCheck();
+                    }
+                });
             }
-        });
+        }
+        return new AlwaysFail();
     }
 
     /**
@@ -198,19 +207,26 @@ public abstract class RxTestUtils
      */
     public static Check alwaysWarningCheck()
     {
-        return new Check("Always warns", new CheckSubscriber()
+        class AlwaysWarn extends Check
         {
-            @Override
-            public Result getFinalResult()
+            protected AlwaysWarn()
             {
-                return new Result(Outcome.WARNING, "Always Warning Report");
-            }
+                super("Always warns", new CheckSubscriber()
+                {
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        return new Result(Outcome.WARNING, "Always Warning Report");
+                    }
 
-            @Override
-            public void onNext(Event event)
-            {
-                endCheck();
+                    @Override
+                    public void onNext(Event event)
+                    {
+                        endCheck();
+                    }
+                });
             }
-        });
+        }
+        return new AlwaysWarn();
     }
 }

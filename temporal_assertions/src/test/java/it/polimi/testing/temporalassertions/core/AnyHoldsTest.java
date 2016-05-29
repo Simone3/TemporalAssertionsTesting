@@ -2,10 +2,10 @@ package it.polimi.testing.temporalassertions.core;
 
 import org.junit.Test;
 
-import static it.polimi.testing.temporalassertions.RxTestUtils.alwaysFailureCheck;
-import static it.polimi.testing.temporalassertions.RxTestUtils.alwaysSuccessCheck;
-import static it.polimi.testing.temporalassertions.RxTestUtils.alwaysWarningCheck;
-import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysFailureCheck;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysSuccessCheck;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysWarningCheck;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.core.AnyHolds.anyHolds;
 
 public class AnyHoldsTest

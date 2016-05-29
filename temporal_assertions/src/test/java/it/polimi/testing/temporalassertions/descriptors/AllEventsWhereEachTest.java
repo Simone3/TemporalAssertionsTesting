@@ -6,10 +6,10 @@ import org.junit.Test;
 import it.polimi.testing.temporalassertions.core.Check;
 import it.polimi.testing.temporalassertions.core.Outcome;
 
-import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
-import static it.polimi.testing.temporalassertions.RxTestUtils.ends;
-import static it.polimi.testing.temporalassertions.RxTestUtils.is;
-import static it.polimi.testing.temporalassertions.RxTestUtils.starts;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.ends;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.starts;
 import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
 import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
 import static it.polimi.testing.temporalassertions.core.AtMost.atMost;

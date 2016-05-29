@@ -14,9 +14,9 @@ import it.polimi.testing.temporalassertions.core.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.observers.TestSubscriber;
 
-import static it.polimi.testing.temporalassertions.RxTestUtils.alwaysFailureCheck;
-import static it.polimi.testing.temporalassertions.RxTestUtils.alwaysSuccessCheck;
-import static it.polimi.testing.temporalassertions.RxTestUtils.generateEvents;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysFailureCheck;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysSuccessCheck;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.generateEvents;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

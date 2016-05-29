@@ -5,8 +5,8 @@ import org.junit.Test;
 import it.polimi.testing.temporalassertions.core.Check;
 import it.polimi.testing.temporalassertions.core.Outcome;
 
-import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
-import static it.polimi.testing.temporalassertions.RxTestUtils.is;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 
 public class AnEventThatTest
