@@ -6,13 +6,13 @@ import org.hamcrest.Matcher;
 
 import java.util.List;
 
-import it.polimi.testing.temporalassertions.checks.Check;
-import it.polimi.testing.temporalassertions.checks.CheckSubscriber;
-import it.polimi.testing.temporalassertions.checks.Outcome;
-import it.polimi.testing.temporalassertions.checks.Result;
+import it.polimi.testing.temporalassertions.core.Check;
+import it.polimi.testing.temporalassertions.core.CheckSubscriber;
+import it.polimi.testing.temporalassertions.core.Outcome;
+import it.polimi.testing.temporalassertions.core.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
-import it.polimi.testing.temporalassertions.operators.EnforceCheck;
+import it.polimi.testing.temporalassertions.core.EnforceCheck;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;

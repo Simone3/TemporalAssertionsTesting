@@ -13,22 +13,22 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
 import it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
-import it.polimi.testing.temporalassertions.monitor.EventMonitor;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static it.polimi.testing.temporalassertions.checks.Not.notTrueThat;
-import static it.polimi.testing.temporalassertions.descriptors.AllEventsWhereEach.allEventsWhereEach;
-import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
+import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
+import static it.polimi.testing.temporalassertions.core.Not.notTrueThat;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
 import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.isFragmentLifecycleEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
-import static it.polimi.testing.temporalassertions.quantifiers.Exactly.exactly;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.core.StringStartsWith.startsWith;
@@ -46,7 +46,6 @@ public class RxExampleFragment extends Fragment
     @VisibleForTesting
     CountDownTimer countDownTimer;
     private boolean countDownStarted = false;
-    private int rand = 123;
 
     public RxExampleFragment()
     {
@@ -144,7 +143,7 @@ public class RxExampleFragment extends Fragment
     {
         EventMonitor.getInstance().fireCustomEvent(new CallbackEvent("Activity->Fragment"));
 
-        EventMonitor.getInstance().fireCustomEvent(new GenericEvent(rand));
+        EventMonitor.getInstance().fireCustomEvent(new GenericEvent(123));
 
         countDownStarted = true;
 
@@ -155,14 +154,14 @@ public class RxExampleFragment extends Fragment
                 currentCountDownValue = millisUntilFinished;
                 int seconds = Math.round(millisUntilFinished / 1000);
                 if(seconds==10) return;
-                String newText = "seconds remaining: " + seconds;
+                String newText = getActivity().getString(R.string.seconds, seconds);
                 if(newText.equals(countDownView.getText().toString())) return;
                 countDownView.setText(newText);
             }
 
             public void onFinish()
             {
-                countDownView.setText("End");
+                countDownView.setText(R.string.end);
                 if(listener!=null)
                 {
                     listener.onCountDownFinished(true);

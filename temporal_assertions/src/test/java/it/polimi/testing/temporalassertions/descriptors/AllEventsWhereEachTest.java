@@ -3,17 +3,17 @@ package it.polimi.testing.temporalassertions.descriptors;
 
 import org.junit.Test;
 
-import it.polimi.testing.temporalassertions.checks.Check;
-import it.polimi.testing.temporalassertions.checks.Outcome;
+import it.polimi.testing.temporalassertions.core.Check;
+import it.polimi.testing.temporalassertions.core.Outcome;
 
 import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.RxTestUtils.ends;
 import static it.polimi.testing.temporalassertions.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.RxTestUtils.starts;
-import static it.polimi.testing.temporalassertions.descriptors.AllEventsWhereEach.allEventsWhereEach;
-import static it.polimi.testing.temporalassertions.quantifiers.AtLeast.atLeast;
-import static it.polimi.testing.temporalassertions.quantifiers.AtMost.atMost;
-import static it.polimi.testing.temporalassertions.quantifiers.Exactly.exactly;
+import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
+import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
+import static it.polimi.testing.temporalassertions.core.AtMost.atMost;
+import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
 
 public class AllEventsWhereEachTest
 {

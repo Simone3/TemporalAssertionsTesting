@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">SimpleExampleApp</string>
+    <string name="waiting_to_start">Waiting to start</string>
+    <string name="send_event_to_fragment">Send event to fragment</string>
+    <string name="waiting">Waiting</string>
+    <string name="completed">Completed!</string>
+    <string name="failed">Failed!</string>
+    <string name="end">End</string>
+    <string name="seconds">seconds remaining: %1$d</string>
+
 </resources>

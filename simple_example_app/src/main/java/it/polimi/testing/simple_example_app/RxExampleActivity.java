@@ -12,11 +12,12 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import it.polimi.testing.temporalassertions.events.ActivityLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
-import it.polimi.testing.temporalassertions.monitor.EventMonitor;
+import it.polimi.testing.temporalassertions.core.EventMonitor;
 import rx.Observable;
 import rx.functions.Func1;
 
-import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
+import static it.polimi.testing.simple_example_app.custom_check.MyDescriptor.myDescriptor;
+import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
@@ -27,6 +28,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class RxExampleActivity extends AppCompatActivity implements RxExampleFragment.OnCountDownEnded
 {
     @VisibleForTesting
+    private
     RxExampleFragment fragment;
     private TextView resultView;
 
@@ -78,8 +80,8 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
     {
         EventMonitor.getInstance().fireCustomEvent(new CallbackEvent("Fragment->Activity"));
 
-        if(result) resultView.setText("Completed!");
-        else resultView.setText("Failed!");
+        if(result) resultView.setText(R.string.completed);
+        else resultView.setText(R.string.failed);
     }
 
 
@@ -119,6 +121,10 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
         eventMonitor.checkThat("The callback Activity->Fragment happens after the result is written",
                 anEventThat(isCallbackEvent("Activity->Fragment"))
                     .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
+
+        eventMonitor.checkThat("Custom check not working!",
+                myDescriptor()
+                    .myCheck());
     }
 
     @Override

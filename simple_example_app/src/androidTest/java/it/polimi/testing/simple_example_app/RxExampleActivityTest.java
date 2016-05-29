@@ -14,12 +14,12 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import it.polimi.testing.temporalassertions.monitor.EventMonitor;
+import it.polimi.testing.temporalassertions.core.EventMonitor;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.jayway.awaitility.Awaitility.await;
-import static it.polimi.testing.temporalassertions.checks.AllHold.allHold;
-import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
+import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.isFragmentLifecycleEvent;
 import static junit.framework.Assert.fail;
 

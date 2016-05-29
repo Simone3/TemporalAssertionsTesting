@@ -9,7 +9,8 @@ import org.robolectric.annotation.Config;
 import java.util.List;
 
 import it.polimi.testing.temporalassertions.BuildConfig;
-import it.polimi.testing.temporalassertions.checks.Result;
+import it.polimi.testing.temporalassertions.core.EventMonitor;
+import it.polimi.testing.temporalassertions.core.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.observers.TestSubscriber;
 

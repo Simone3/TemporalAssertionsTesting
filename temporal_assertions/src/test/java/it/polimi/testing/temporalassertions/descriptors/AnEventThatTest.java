@@ -2,12 +2,12 @@ package it.polimi.testing.temporalassertions.descriptors;
 
 import org.junit.Test;
 
-import it.polimi.testing.temporalassertions.checks.Check;
-import it.polimi.testing.temporalassertions.checks.Outcome;
+import it.polimi.testing.temporalassertions.core.Check;
+import it.polimi.testing.temporalassertions.core.Outcome;
 
 import static it.polimi.testing.temporalassertions.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.RxTestUtils.is;
-import static it.polimi.testing.temporalassertions.descriptors.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 
 public class AnEventThatTest
 {
