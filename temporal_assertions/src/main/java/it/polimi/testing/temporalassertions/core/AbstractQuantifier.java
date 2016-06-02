@@ -7,7 +7,7 @@ import it.polimi.testing.temporalassertions.events.Event;
 /**
  * An abstract quantifier. The implementations express some condition on the number of events.
  */
-public abstract class AbstractQuantifier
+abstract class AbstractQuantifier
 {
     private int counter;
     private final int desiredBound;

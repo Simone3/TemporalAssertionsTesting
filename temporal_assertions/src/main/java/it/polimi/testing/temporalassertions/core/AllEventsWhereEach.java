@@ -3,6 +3,8 @@ package it.polimi.testing.temporalassertions.core;
 
 import org.hamcrest.Matcher;
 
+import java.util.Comparator;
+
 import it.polimi.testing.temporalassertions.Utils;
 import it.polimi.testing.temporalassertions.events.Event;
 
@@ -169,6 +171,71 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
                             {
                                 report = "The events were not enough to satisfy all matchers: no event satisfied '"+matchers[i]+"'";
                             }
+                        }
+
+                        return new Result(outcome, report);
+                    }
+                });
+    }
+
+    /**
+     * Checks if all the events in the sequence are in a specific order, defined by the given comparator.
+     * @param comparator the comparator defining the order between the events
+     * @return the check will return SUCCESS if all comparisons return a value <= 0, FAILURE if at least one
+     *         returns a value > 0, WARNING if no events of the given type were found in the sequence
+     */
+    public final Check areOrdered(final Comparator<Event> comparator)
+    {
+        return new Check(
+                "All events where each "+getMatcher()+" are in the order defined by the comparator: "+comparator,
+
+                new CheckSubscriber()
+                {
+                    private boolean matchedAtLeastOneEvent = false;
+                    private boolean wrongOrder = false;
+                    private Event wrongEvent;
+                    private Event previousEvent = null;
+
+                    @Override
+                    public void onNext(Event event)
+                    {
+                        // If we have a match...
+                        if(getMatcher().matches(event))
+                        {
+                            matchedAtLeastOneEvent = true;
+
+                            // If the order is wrong, exit
+                            if(previousEvent!=null && comparator.compare(previousEvent, event)>0)
+                            {
+                                wrongOrder = true;
+                                wrongEvent = event;
+                                endCheck();
+                            }
+
+                            previousEvent = event;
+                        }
+                    }
+
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        Outcome outcome;
+                        String report;
+
+                        if(wrongOrder)
+                        {
+                            outcome = Outcome.FAILURE;
+                            report = "Events "+previousEvent+" and "+wrongEvent+" are not ordered";
+                        }
+                        else if(matchedAtLeastOneEvent)
+                        {
+                            outcome = Outcome.SUCCESS;
+                            report = "All events are in order";
+                        }
+                        else
+                        {
+                            outcome = Outcome.WARNING;
+                            report = "No events found in the sequence";
                         }
 
                         return new Result(outcome, report);

@@ -9,7 +9,7 @@ import rx.Subscriber;
  * of events into an observable that will fire one result
  * @param <T> the class of the event
  */
-public class EnforceCheck<T extends Event> implements Observable.Operator<Result, T>
+class EnforceCheck<T extends Event> implements Observable.Operator<Result, T>
 {
     private final Check check;
 

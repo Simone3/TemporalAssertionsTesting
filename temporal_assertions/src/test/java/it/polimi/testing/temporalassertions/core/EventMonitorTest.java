@@ -1,4 +1,4 @@
-package it.polimi.testing.temporalassertions.monitor;
+package it.polimi.testing.temporalassertions.core;
 
 
 import org.junit.Test;
@@ -7,10 +7,9 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import it.polimi.testing.temporalassertions.BuildConfig;
-import it.polimi.testing.temporalassertions.core.EventMonitor;
-import it.polimi.testing.temporalassertions.core.Result;
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.observers.TestSubscriber;
 
@@ -50,6 +49,9 @@ public class EventMonitorTest
         TestSubscriber<? super Event> eventsTestSubscriber = new TestSubscriber<>();
 
         eventMonitor.startVerification(eventsTestSubscriber, resultsTestSubscriber);
+
+        eventsTestSubscriber.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        resultsTestSubscriber.awaitTerminalEvent(2, TimeUnit.SECONDS);
 
         resultsTestSubscriber.assertNoErrors();
         List<Result> results = resultsTestSubscriber.getOnNextEvents();

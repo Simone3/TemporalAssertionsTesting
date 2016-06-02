@@ -48,7 +48,7 @@ public class Check
      * Getter
      * @return a description of the check
      */
-    protected String getDescription()
+    String getDescription()
     {
         return description;
     }

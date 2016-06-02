@@ -23,7 +23,7 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 /**
  * Some utilities for testing the library
  */
-public abstract class RxTestUtils
+abstract class RxTestUtils
 {
     /**
      * Generates "strings.length" generic events, each containing the corresponding string
@@ -151,7 +151,7 @@ public abstract class RxTestUtils
     {
         class AlwaysSuccess extends Check
         {
-            protected AlwaysSuccess()
+            AlwaysSuccess()
             {
                 super("Always succeeds", new CheckSubscriber()
                 {
@@ -180,7 +180,7 @@ public abstract class RxTestUtils
     {
         class AlwaysFail extends Check
         {
-            protected AlwaysFail()
+            AlwaysFail()
             {
                 super("Always fails", new CheckSubscriber()
                 {
@@ -209,7 +209,7 @@ public abstract class RxTestUtils
     {
         class AlwaysWarn extends Check
         {
-            protected AlwaysWarn()
+            AlwaysWarn()
             {
                 super("Always warns", new CheckSubscriber()
                 {

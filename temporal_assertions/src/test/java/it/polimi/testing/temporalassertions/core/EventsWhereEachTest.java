@@ -1,18 +1,15 @@
-package it.polimi.testing.temporalassertions.descriptors;
+package it.polimi.testing.temporalassertions.core;
 
 
 import org.junit.Test;
 
-import it.polimi.testing.temporalassertions.core.Check;
-import it.polimi.testing.temporalassertions.core.Outcome;
-
-import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
-import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
 import static it.polimi.testing.temporalassertions.core.AtMost.atMost;
 import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 
 public class EventsWhereEachTest
 {

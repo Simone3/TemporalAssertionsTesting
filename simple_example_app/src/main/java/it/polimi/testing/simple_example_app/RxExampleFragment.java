@@ -13,8 +13,11 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import java.util.Comparator;
+
 import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
+import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
@@ -208,9 +211,28 @@ public class RxExampleFragment extends Fragment
                 allEventsWhereEach(isTextChangeEventFrom(countDownView))
                     .are(exactly(11)));
 
-        eventMonitor.checkThat("Countdown values are in the wrong order",
+        eventMonitor.checkThat("Countdown values are in the wrong order [matchInOrder example]",
                 allEventsWhereEach(isTextChangeEvent(countDownView, startsWith("seconds remaining: ")))
                     .matchInOrder(isTextChangeEvent(countDownView, endsWith("9")), isTextChangeEvent(countDownView, endsWith("8")), isTextChangeEvent(countDownView, endsWith("7")), isTextChangeEvent(countDownView, endsWith("6")), isTextChangeEvent(countDownView, endsWith("5")), isTextChangeEvent(countDownView, endsWith("4")), isTextChangeEvent(countDownView, endsWith("3")), isTextChangeEvent(countDownView, endsWith("2")), isTextChangeEvent(countDownView, endsWith("1"))));
+
+        eventMonitor.checkThat("Countdown values are in the wrong order [areOrdered example]",
+                allEventsWhereEach(isTextChangeEvent(countDownView, startsWith("seconds remaining: ")))
+                        .areOrdered(new Comparator<Event>()
+                        {
+                            @Override
+                            public int compare(Event lhs, Event rhs)
+                            {
+                                String t1 = ((TextChangeEvent) lhs).getText();
+                                String t2 = ((TextChangeEvent) rhs).getText();
+
+                                // Get seconds in string
+                                int s1 = Integer.valueOf(t1.substring(19, t1.length()));
+                                int s2 = Integer.valueOf(t2.substring(19, t2.length()));
+
+                                // Check if seconds values are in inverse order
+                                return Integer.compare(s2, s1);
+                            }
+                        }));
 
         eventMonitor.checkThat("'End' is written at the wrong moment",
                 anEventThat(isTextChangeEvent(countDownView, equalTo("End")))
@@ -259,7 +281,7 @@ public class RxExampleFragment extends Fragment
         // [Uncomment for runtime monitoring] EventMonitor.getInstance().startVerification(null, null);
 
         // Crash if a result fails (AssertionError)
-        //EventMonitor.getInstance().startVerification(null, EventMonitor.getAssertionErrorResultsSubscriber());
+        // EventMonitor.getInstance().startVerification(null, EventMonitor.getAssertionErrorResultsSubscriber());
     }
 }
 
