@@ -34,12 +34,9 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
     }
 
     /**
-     * Allows to quantify all the events matched by the descriptor, e.g. {@code are(exactly(10))} checks that all
-     * events of the specified type are exactly 10 in the whole sequence
-     * @param quantifier the quantifier that describes the number of events that are expected
-     * @return the check will return SUCCESS if the quantifier is verified, FAILURE otherwise
+     * Internal implementation for: {@see Exist#eventsWhereEach(Matcher)}
      */
-    public Check are(final AbstractQuantifier quantifier)
+    Check are(final AbstractQuantifier quantifier)
     {
         return new Check(
                 "All events where each "+getMatcher()+" are "+quantifier.getDescription(),

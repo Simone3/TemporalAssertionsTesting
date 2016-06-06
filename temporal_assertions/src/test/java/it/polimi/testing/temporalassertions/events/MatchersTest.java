@@ -9,8 +9,8 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
-import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventWhereTextMatches;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeFrom;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeWhereTextMatches;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.anything;
@@ -25,16 +25,16 @@ public class MatchersTest
     public void testTextChangeEventTextMatcher()
     {
         final TextChangeEvent textChangeEvent = new TextChangeEvent(null, "Text");
-        Matcher<?> matcher = isTextChangeEventWhereTextMatches(is(equalTo("Text")));
+        Matcher<?> matcher = isTextChangeWhereTextMatches(is(equalTo("Text")));
         assertTrue(matcher.matches(textChangeEvent));
 
-        matcher = TextChangeEvent.isTextChangeEvent();
+        matcher = TextChangeEvent.isTextChange();
         assertTrue(matcher.matches(textChangeEvent));
 
-        matcher = isTextChangeEventFrom(null);
+        matcher = isTextChangeFrom(null);
         assertTrue(matcher.matches(textChangeEvent));
 
-        matcher = TextChangeEvent.isTextChangeEvent(null, startsWith("Te"));
+        matcher = TextChangeEvent.isTextChange(null, startsWith("Te"));
         assertTrue(matcher.matches(textChangeEvent));
     }
 
@@ -42,16 +42,16 @@ public class MatchersTest
     public void testTextChangeEventTextMatcherDifferentEvent()
     {
         final Event genericEvent = new GenericEvent(1, 2, 3);
-        Matcher<?> matcher = isTextChangeEventWhereTextMatches(is(equalTo("Text")));
+        Matcher<?> matcher = isTextChangeWhereTextMatches(is(equalTo("Text")));
         assertFalse(matcher.matches(genericEvent));
 
-        matcher = TextChangeEvent.isTextChangeEvent();
+        matcher = TextChangeEvent.isTextChange();
         assertFalse(matcher.matches(genericEvent));
 
-        matcher = isTextChangeEventFrom(null);
+        matcher = isTextChangeFrom(null);
         assertFalse(matcher.matches(genericEvent));
 
-        matcher = TextChangeEvent.isTextChangeEvent(null, startsWith("Te"));
+        matcher = TextChangeEvent.isTextChange(null, startsWith("Te"));
         assertFalse(matcher.matches(genericEvent));
     }
 
@@ -79,10 +79,10 @@ public class MatchersTest
         System.out.println(GenericEvent.isGenericEventWithObjectsThatMatch(anything()));
         System.out.println(GenericEvent.isGenericEvent());
 
-        System.out.println(TextChangeEvent.isTextChangeEvent(textView, CoreMatchers.is("asd")));
-        System.out.println(TextChangeEvent.isTextChangeEventWhereTextMatches(endsWith("asd")));
-        System.out.println(TextChangeEvent.isTextChangeEventFrom(textView));
-        System.out.println(TextChangeEvent.isTextChangeEvent());
+        System.out.println(TextChangeEvent.isTextChange(textView, CoreMatchers.is("asd")));
+        System.out.println(TextChangeEvent.isTextChangeWhereTextMatches(endsWith("asd")));
+        System.out.println(TextChangeEvent.isTextChangeFrom(textView));
+        System.out.println(TextChangeEvent.isTextChange());
     }
 
 

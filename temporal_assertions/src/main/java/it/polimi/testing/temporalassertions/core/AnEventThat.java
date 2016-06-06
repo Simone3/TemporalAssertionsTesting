@@ -9,7 +9,7 @@ import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
 import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
 
 /**
- * Descriptor that matches a single event in the sequence
+ * Descriptor that matches a single event at a time in the sequence
  */
 public class AnEventThat extends AbstractEventDescriptor
 {
@@ -22,49 +22,13 @@ public class AnEventThat extends AbstractEventDescriptor
     }
 
     /**
-     * Descriptor that matches a single event in the sequence
+     * Descriptor that matches a single event at a time in the sequence
      * @param matcher the Hamcrest matcher to recognize the event
      * @return the descriptor of a single event
      */
     public static AnEventThat anEventThat(Matcher<? extends Event> matcher)
     {
         return new AnEventThat(matcher);
-    }
-
-    /**
-     * Checks that {@code this} exists, i.e. at least one event in the sequence matches the Hamcrest matcher
-     * @return the check will return SUCCESS if {@code this} exists, FAILURE if it does not
-     */
-    public Check exists()
-    {
-        return AllEventsWhereEach.allEventsWhereEach(getMatcher()).are(atLeast(1))
-                .overwriteDescription("An event that "+getMatcher()+" exists");
-    }
-
-    /**
-     * Checks that {@code this} exists after {@code eventBefore}, i.e. there's at least one {@code this} in
-     * the sequence after {@code eventBefore}
-     * @param eventBefore the descriptor of the event after which we must find {@code this}
-     * @return the check will return SUCCESS if {@code this} exists after {@code eventBefore}, FAILURE if it
-     *         does not and WARNING if no {@code eventBefore} has been found in the sequence
-     */
-    public Check existsAfter(final AnEventThat eventBefore)
-    {
-        return atLeast(1).eventsWhereEach(getMatcher()).mustHappenAfter(eventBefore)
-                .overwriteDescription("An event that "+getMatcher()+" exists after an event that "+eventBefore.getMatcher());
-    }
-
-    /**
-     * Checks that {@code this} exists before {@code eventAfter}, i.e. there's at least one {@code this} in
-     * the sequence before {@code eventAfter}
-     * @param eventAfter the descriptor of the event before which we must find {@code this}
-     * @return the check will return SUCCESS if {@code this} exists before {@code eventAfter}, FAILURE if it
-     *         does not and WARNING if no {@code eventAfter} has been found in the sequence
-     */
-    public Check existsBefore(final AnEventThat eventAfter)
-    {
-        return atLeast(1).eventsWhereEach(getMatcher()).mustHappenBefore(eventAfter)
-                .overwriteDescription("An event that "+getMatcher()+" exists after an before that "+eventAfter.getMatcher());
     }
 
     /**
@@ -90,7 +54,7 @@ public class AnEventThat extends AbstractEventDescriptor
      *         the sequence at all, FAILURE if there's at least one before {@code eventBefore} and WARNING if no
      *         {@code eventBefore} has been found in the sequence
      */
-    public Check canOnlyHappenAfter(final AnEventThat eventBefore)
+    public Check canHappenOnlyAfter(final AnEventThat eventBefore)
     {
         return new Check(
                 "Every event that "+getMatcher()+" happens after an event that "+eventBefore.getMatcher(),
@@ -178,7 +142,7 @@ public class AnEventThat extends AbstractEventDescriptor
      *         the sequence at all, FAILURE if there's at least one after {@code eventBefore} and WARNING if no
      *         {@code this} has been found in the sequence
      */
-    public Check canOnlyHappenBefore(final AnEventThat eventAfter)
+    public Check canHappenOnlyBefore(final AnEventThat eventAfter)
     {
         return new Check(
                 "Every event that "+getMatcher()+" happens before an event that "+eventAfter.getMatcher(),
@@ -273,9 +237,9 @@ public class AnEventThat extends AbstractEventDescriptor
      *         a {@code eventBefore} or is not in the sequence at all, FAILURE if there's at least one
      *         after {@code eventAfter} or before {@code eventBefore}
      */
-    public Check canOnlyHappenBetween(AnEventThat eventBefore, AnEventThat eventAfter)
+    public Check canHappenOnlyBetween(AnEventThat eventBefore, AnEventThat eventAfter)
     {
-        return allHold(canOnlyHappenAfter(eventBefore), canOnlyHappenBefore(eventAfter))
+        return allHold(canHappenOnlyAfter(eventBefore), canHappenOnlyBefore(eventAfter))
                 .overwriteDescription("Every event that "+getMatcher()+" happens between an event that "+eventBefore.getMatcher()+" and an event that "+eventAfter.getMatcher());
     }
 }

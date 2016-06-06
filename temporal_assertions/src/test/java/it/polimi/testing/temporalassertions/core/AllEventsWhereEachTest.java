@@ -9,84 +9,12 @@ import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 
 import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
-import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
-import static it.polimi.testing.temporalassertions.core.AtMost.atMost;
-import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.ends;
-import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.starts;
 
 public class AllEventsWhereEachTest
 {
-    /**********************************************
-     * Are + Exactly Tests
-     **********************************************/
-
-    @Test
-    public void testAreExactly_Correct()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "A"};
-        Check check = allEventsWhereEach(is("A")).are(exactly(3));
-        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
-    }
-
-    @Test
-    public void testAreExactly_Less()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "D"};
-        Check check = allEventsWhereEach(is("A")).are(exactly(3));
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
-    }
-
-    @Test
-    public void testAreExactly_More()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "A", "E", "A", "F"};
-        Check check = allEventsWhereEach(is("A")).are(exactly(3));
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
-    }
-
-    /**********************************************
-     * Are + AtLeast Tests
-     **********************************************/
-
-    @Test
-    public void testAreAtLeast_Correct()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "A", "E", "A", "F"};
-        Check check = allEventsWhereEach(is("A")).are(atLeast(3));
-        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
-    }
-
-    @Test
-    public void testAreAtLeast_Less()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "D"};
-        Check check = allEventsWhereEach(is("A")).are(atLeast(3));
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
-    }
-
-    /**********************************************
-     * Are + AtMost Tests
-     **********************************************/
-
-    @Test
-    public void testAreAtMost_Correct()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "D"};
-        Check check = allEventsWhereEach(is("A")).are(atMost(3));
-        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
-    }
-
-    @Test
-    public void testAreAtMost_More()
-    {
-        String[] events = new String[]{"A", "B", "C", "A", "D", "A", "E", "A", "F"};
-        Check check = allEventsWhereEach(is("A")).are(atMost(3));
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
-    }
-
     /**********************************************
      * MatchInOrder Tests
      **********************************************/

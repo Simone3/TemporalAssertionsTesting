@@ -6,8 +6,9 @@ import org.hamcrest.Matcher;
 import it.polimi.testing.temporalassertions.events.Event;
 
 /**
- * Descriptor that allows to match a given number of events in the sequence. The number of those events
- * is described by a quantifier, so it can be for example "exactly", "at least", etc.
+ * Descriptor that allows to match a given number of events in the sequence (set of events).
+ * The number of those events  * is described by a quantifier, so it can be for example "exactly",
+ * "at least", etc.
  */
 public class EventsWhereEach extends AbstractEventDescriptor
 {
@@ -25,9 +26,9 @@ public class EventsWhereEach extends AbstractEventDescriptor
     }
 
     /**
-     * Checks that the events described by {@code this} are always strictly after each {@code eventBefore}.
+     * Checks that the events described by {@code this} are always exclusively after each {@code eventBefore}.
      * For example {@code exactly(2).eventsWhereEach(m1).mustHappenAfter(anEventThat(m2)} means that after each
-     * {@code eventBefore} event there must be 2 {@code this} events. "Strictly" means that those 2 events must
+     * {@code eventBefore} event there must be 2 {@code this} events. "Exclusively" means that those 2 events must
      * be before the next (if any) event matched by {@code this}
      * @param eventBefore the event after which we must have {@code this} events
      * @return the check will return SUCCESS if after each {@code eventBefore} we found the desired amount of
@@ -86,7 +87,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                         quantifier.resetCounter();
                                     }
 
-                                    // Otherwise we have an error ("strictly" constraint: no "eventBefore" before we meet the desired number of "this" events!)
+                                    // Otherwise we have an error ("exclusively" constraint: no "eventBefore" before we meet the desired number of "this" events!)
                                     else
                                     {
                                         state.setState(CONDITION_NOT_MET);
@@ -159,9 +160,9 @@ public class EventsWhereEach extends AbstractEventDescriptor
     }
 
     /**
-     * Checks that the events described by {@code this} are always strictly before each {@code eventAfter}.
+     * Checks that the events described by {@code this} are always exclusively before each {@code eventAfter}.
      * For example {@code exactly(2).eventsWhereEach(m1).mustHappenBefore(anEventThat(m2)} means that before
-     * each {@code eventAfter} event there must be 2 {@code this} events. "Strictly" means that those 2 events
+     * each {@code eventAfter} event there must be 2 {@code this} events. "Exclusively" means that those 2 events
      * must be after the previous (if any) event matched by {@code this}
      * @param eventAfter the event before which we must have {@code this} events
      * @return the check will return SUCCESS if before each {@code eventAfter} we found the desired amount of
@@ -250,11 +251,11 @@ public class EventsWhereEach extends AbstractEventDescriptor
     }
 
     /**
-     * Checks that the events described by {@code this} are always strictly between each
+     * Checks that the events described by {@code this} are always exclusively between each
      * {@code eventBefore-eventAfter} pair. For example
      * {@code exactly(2).eventsWhereEach(m1).mustHappenBetween(anEventThat(m2), anEventThat(m3)} means that
      * between each pair of {@code eventBefore-eventAfter} events there must be 2 {@code this} events.
-     * "Strictly" means that those 2 events cannot be "shared" by overlapping pairs.
+     * "Exclusively" means that those 2 events cannot be "shared" by overlapping pairs.
      * @param eventBefore the event after which we must have {@code this} events
      * @param eventAfter the event before which we must have {@code this} events
      * @return the check will return SUCCESS if between each {@code eventBefore-eventAfter} pair we found the

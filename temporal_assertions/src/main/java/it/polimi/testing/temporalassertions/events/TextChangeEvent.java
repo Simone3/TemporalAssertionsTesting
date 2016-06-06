@@ -64,9 +64,9 @@ public class TextChangeEvent extends Event
      * @param matcher the description of the text linked with the event
      * @return the Hamcrest matcher
      */
-    public static Matcher<TextChangeEvent> isTextChangeEvent(final View view, final Matcher<String> matcher)
+    public static Matcher<TextChangeEvent> isTextChange(final View view, final Matcher<String> matcher)
     {
-        return both(isTextChangeEventFrom(view)).and(isTextChangeEventWhereTextMatches(matcher));
+        return both(isTextChangeFrom(view)).and(isTextChangeWhereTextMatches(matcher));
     }
 
     /**
@@ -74,7 +74,7 @@ public class TextChangeEvent extends Event
      * @param view the view that created the text change event
      * @return the Hamcrest matcher
      */
-    public static Matcher<TextChangeEvent> isTextChangeEventFrom(final View view)
+    public static Matcher<TextChangeEvent> isTextChangeFrom(final View view)
     {
         return new FeatureMatcher<TextChangeEvent, View>(describedAs(Utils.describeView(view), equalTo(view)), "is a text change event from", "view")
         {
@@ -91,7 +91,7 @@ public class TextChangeEvent extends Event
      * @param matcher the description of the text linked with the event
      * @return the Hamcrest matcher
      */
-    public static Matcher<TextChangeEvent> isTextChangeEventWhereTextMatches(final Matcher<String> matcher)
+    public static Matcher<TextChangeEvent> isTextChangeWhereTextMatches(final Matcher<String> matcher)
     {
         return new FeatureMatcher<TextChangeEvent, String>(matcher, "is a text change event with text that is", "text")
         {
@@ -107,7 +107,7 @@ public class TextChangeEvent extends Event
      * Hamcrest matcher that matches any text change event (i.e. any text and any view)
      * @return the Hamcrest matcher
      */
-    public static Matcher<TextChangeEvent> isTextChangeEvent()
+    public static Matcher<TextChangeEvent> isTextChange()
     {
         return new FeatureMatcher<TextChangeEvent, String>(anything(""), "is any text change event", "")
         {

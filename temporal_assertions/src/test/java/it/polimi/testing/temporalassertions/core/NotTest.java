@@ -2,11 +2,11 @@ package it.polimi.testing.temporalassertions.core;
 
 import org.junit.Test;
 
+import static it.polimi.testing.temporalassertions.core.Not.isNotSatisfied;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysFailureCheck;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysSuccessCheck;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.alwaysWarningCheck;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
-import static it.polimi.testing.temporalassertions.core.Not.notTrueThat;
 
 public class NotTest
 {
@@ -14,7 +14,7 @@ public class NotTest
     public void testNot_InvertSuccess()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = notTrueThat(alwaysSuccessCheck());
+        Check check = isNotSatisfied(alwaysSuccessCheck());
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
@@ -22,7 +22,7 @@ public class NotTest
     public void testNot_InvertFailure()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = notTrueThat(alwaysFailureCheck());
+        Check check = isNotSatisfied(alwaysFailureCheck());
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
@@ -30,7 +30,7 @@ public class NotTest
     public void testNot_InvertWarning()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = notTrueThat(alwaysWarningCheck());
+        Check check = isNotSatisfied(alwaysWarningCheck());
         assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
@@ -38,7 +38,7 @@ public class NotTest
     public void testNot_InvertSelf()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = notTrueThat(notTrueThat(alwaysSuccessCheck()));
+        Check check = isNotSatisfied(isNotSatisfied(alwaysSuccessCheck()));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 }

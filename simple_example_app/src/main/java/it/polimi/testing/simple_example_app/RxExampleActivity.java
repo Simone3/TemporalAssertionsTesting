@@ -9,18 +9,18 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.ActivityLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
-import it.polimi.testing.temporalassertions.core.EventMonitor;
 import rx.Observable;
 import rx.functions.Func1;
 
 import static it.polimi.testing.simple_example_app.custom_check.MyDescriptor.myDescriptor;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.Exist.existsAnEventThat;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
-import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEvent;
-import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeEventFrom;
+import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeFrom;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -107,20 +107,17 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
 
 
         eventMonitor.checkThat("There is no Activity->Fragment callback",
-                anEventThat(isCallbackEvent("Activity->Fragment"))
-                    .exists());
+                existsAnEventThat(isCallbackEvent("Activity->Fragment")));
 
         eventMonitor.checkThat("There is no Fragment->Activity callback",
-                anEventThat(isCallbackEvent("Fragment->Activity"))
-                    .exists());
+                existsAnEventThat(isCallbackEvent("Fragment->Activity")));
 
         eventMonitor.checkThat("The result view is never updated!",
-                anEventThat(isTextChangeEvent(resultView, is(equalTo("Completed!"))))
-                    .exists());
+                existsAnEventThat(TextChangeEvent.isTextChange(resultView, is(equalTo("Completed!")))));
 
         eventMonitor.checkThat("The callback Activity->Fragment happens after the result is written",
                 anEventThat(isCallbackEvent("Activity->Fragment"))
-                    .canOnlyHappenBefore(anEventThat(isTextChangeEventFrom(resultView))));
+                    .canHappenOnlyBefore(anEventThat(isTextChangeFrom(resultView))));
 
         eventMonitor.checkThat("Custom check not working!",
                 myDescriptor()

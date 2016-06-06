@@ -2,9 +2,6 @@ package it.polimi.testing.temporalassertions.core;
 
 import org.junit.Test;
 
-import it.polimi.testing.temporalassertions.core.Check;
-import it.polimi.testing.temporalassertions.core.Outcome;
-
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
@@ -12,202 +9,182 @@ import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 public class AnEventThatTest
 {
     /**********************************************
-     * Exists Tests
+     * CanHappenOnlyAfter Tests
      **********************************************/
 
     @Test
-    public void testExists_Success()
+    public void testCanHappenOnlyAfter_M1afterM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("D")).exists();
+        Check check = anEventThat(is("D")).canHappenOnlyAfter(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testExists_Failure()
+    public void testCanHappenOnlyAfter_M1beforeM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("X")).exists();
-        assertThatOutcomeIs(events, check, Outcome.FAILURE);
-    }
-
-    /**********************************************
-     * CanOnlyHappenAfter Tests
-     **********************************************/
-
-    @Test
-    public void testCanOnlyHappenAfter_M1afterM2()
-    {
-        String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("D")).canOnlyHappenAfter(anEventThat(is("B")));
-        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
-    }
-
-    @Test
-    public void testCanOnlyHappenAfter_M1beforeM2()
-    {
-        String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("B")).canOnlyHappenAfter(anEventThat(is("E")));
+        Check check = anEventThat(is("B")).canHappenOnlyAfter(anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenAfter_NoM1()
+    public void testCanHappenOnlyAfter_NoM1()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("G")).canOnlyHappenAfter(anEventThat(is("B")));
+        Check check = anEventThat(is("G")).canHappenOnlyAfter(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenAfter_NoM1NoM2()
+    public void testCanHappenOnlyAfter_NoM1NoM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("G")).canOnlyHappenAfter(anEventThat(is("H")));
+        Check check = anEventThat(is("G")).canHappenOnlyAfter(anEventThat(is("H")));
         assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
     /**********************************************
-     * CanOnlyHappenBefore Tests
+     * CanHappenOnlyBefore Tests
      **********************************************/
 
     @Test
-    public void testCanOnlyHappenBefore_M1afterM2()
+    public void testCanHappenOnlyBefore_M1afterM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("D")).canOnlyHappenBefore(anEventThat(is("B")));
+        Check check = anEventThat(is("D")).canHappenOnlyBefore(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_M1beforeM2()
+    public void testCanHappenOnlyBefore_M1beforeM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("B")).canOnlyHappenBefore(anEventThat(is("E")));
+        Check check = anEventThat(is("B")).canHappenOnlyBefore(anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_NoM1()
+    public void testCanHappenOnlyBefore_NoM1()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("G")).canOnlyHappenBefore(anEventThat(is("B")));
+        Check check = anEventThat(is("G")).canHappenOnlyBefore(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_NoM1NoM2()
+    public void testCanHappenOnlyBefore_NoM1NoM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("G")).canOnlyHappenBefore(anEventThat(is("H")));
+        Check check = anEventThat(is("G")).canHappenOnlyBefore(anEventThat(is("H")));
         assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_MultipleM1Before()
+    public void testCanHappenOnlyBefore_MultipleM1Before()
     {
         String[] events = new String[]{"A", "B", "A", "D", "A", "E", "F"};
-        Check check = anEventThat(is("A")).canOnlyHappenBefore(anEventThat(is("E")));
+        Check check = anEventThat(is("A")).canHappenOnlyBefore(anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_MultipleM1BeforeAndAfter()
+    public void testCanHappenOnlyBefore_MultipleM1BeforeAndAfter()
     {
         String[] events = new String[]{"A", "B", "A", "D", "A", "E", "F", "F", "A", "B"};
-        Check check = anEventThat(is("A")).canOnlyHappenBefore(anEventThat(is("E")));
+        Check check = anEventThat(is("A")).canHappenOnlyBefore(anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_MultipleM1AndM2Correct()
+    public void testCanHappenOnlyBefore_MultipleM1AndM2Correct()
     {
         String[] events = new String[]{"A", "B", "C", "B", "B", "A", "A", "A", "B", "B"};
-        Check check = anEventThat(is("A")).canOnlyHappenBefore(anEventThat(is("B")));
+        Check check = anEventThat(is("A")).canHappenOnlyBefore(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBefore_MultipleM1AndM2Failure()
+    public void testCanHappenOnlyBefore_MultipleM1AndM2Failure()
     {
         String[] events = new String[]{"A", "B", "C", "B", "B", "A", "A", "A", "B", "A"};
-        Check check = anEventThat(is("A")).canOnlyHappenBefore(anEventThat(is("B")));
+        Check check = anEventThat(is("A")).canHappenOnlyBefore(anEventThat(is("B")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     /**********************************************
-     * CanOnlyHappenBetween Tests
+     * CanHappenOnlyBetween Tests
      **********************************************/
 
     @Test
-    public void testCanOnlyHappenBetween_singleM1between()
+    public void testCanHappenOnlyBetween_singleM1between()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("D")).canOnlyHappenBetween(anEventThat(is("B")), anEventThat(is("E")));
+        Check check = anEventThat(is("D")).canHappenOnlyBetween(anEventThat(is("B")), anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_M1after()
+    public void testCanHappenOnlyBetween_M1after()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("E")).canOnlyHappenBetween(anEventThat(is("A")), anEventThat(is("D")));
+        Check check = anEventThat(is("E")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("D")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_M1before()
+    public void testCanHappenOnlyBetween_M1before()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("B")).canOnlyHappenBetween(anEventThat(is("D")), anEventThat(is("F")));
+        Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("D")), anEventThat(is("F")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_NoM1()
+    public void testCanHappenOnlyBetween_NoM1()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("G")).canOnlyHappenBetween(anEventThat(is("A")), anEventThat(is("E")));
+        Check check = anEventThat(is("G")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("E")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_NoM2()
+    public void testCanHappenOnlyBetween_NoM2()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("C")).canOnlyHappenBetween(anEventThat(is("H")), anEventThat(is("F")));
+        Check check = anEventThat(is("C")).canHappenOnlyBetween(anEventThat(is("H")), anEventThat(is("F")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_NoM3()
+    public void testCanHappenOnlyBetween_NoM3()
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
-        Check check = anEventThat(is("D")).canOnlyHappenBetween(anEventThat(is("B")), anEventThat(is("H")));
+        Check check = anEventThat(is("D")).canHappenOnlyBetween(anEventThat(is("B")), anEventThat(is("H")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_MultipleM1Between()
+    public void testCanHappenOnlyBetween_MultipleM1Between()
     {
         String[] events = new String[]{"A", "D", "C", "D", "D", "F"};
-        Check check = anEventThat(is("D")).canOnlyHappenBetween(anEventThat(is("A")), anEventThat(is("F")));
+        Check check = anEventThat(is("D")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("F")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_MultipleMatchesSuccess()
+    public void testCanHappenOnlyBetween_MultipleMatchesSuccess()
     {
         String[] events = new String[]{"A", "B", "C", "C", "A", "A", "B", "C", "A", "A"};
-        Check check = anEventThat(is("B")).canOnlyHappenBetween(anEventThat(is("A")), anEventThat(is("C")));
+        Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("C")));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test
-    public void testCanOnlyHappenBetween_MultipleMatchesFailure()
+    public void testCanHappenOnlyBetween_MultipleMatchesFailure()
     {
         String[] events = new String[]{"A", "B", "C", "C", "A", "A", "B", "A", "A", "A"};
-        Check check = anEventThat(is("B")).canOnlyHappenBetween(anEventThat(is("A")), anEventThat(is("C")));
+        Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("C")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
 }
