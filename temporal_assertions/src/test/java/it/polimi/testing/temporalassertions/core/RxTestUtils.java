@@ -1,5 +1,7 @@
 package it.polimi.testing.temporalassertions.core;
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -155,6 +157,7 @@ abstract class RxTestUtils
             {
                 super("Always succeeds", new CheckSubscriber()
                 {
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -184,6 +187,7 @@ abstract class RxTestUtils
             {
                 super("Always fails", new CheckSubscriber()
                 {
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -213,6 +217,7 @@ abstract class RxTestUtils
             {
                 super("Always warns", new CheckSubscriber()
                 {
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {

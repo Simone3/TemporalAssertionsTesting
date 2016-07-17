@@ -13,8 +13,6 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxTextView;
 
-import java.util.Comparator;
-
 import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
 import it.polimi.testing.temporalassertions.events.Event;
@@ -25,10 +23,10 @@ import rx.Observable;
 import rx.functions.Func1;
 
 import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
+import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
 import static it.polimi.testing.temporalassertions.core.Exist.exist;
-import static it.polimi.testing.temporalassertions.core.Not.isNotSatisfied;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
 import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.isFragmentLifecycleEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChange;
@@ -218,7 +216,21 @@ public class RxExampleFragment extends Fragment
 
         eventMonitor.checkThat("Countdown values are in the wrong order [areOrdered example]",
                 allEventsWhereEach(isTextChange(countDownView, startsWith("seconds remaining: ")))
-                        .areOrdered(new Comparator<Event>()
+                        /****** With Lambda (Java 8) ******/
+                        .areOrdered((Event lhs, Event rhs) ->
+                        {
+                            String t1 = ((TextChangeEvent) lhs).getText();
+                            String t2 = ((TextChangeEvent) rhs).getText();
+
+                            // Get seconds in string
+                            int s1 = Integer.valueOf(t1.substring(19, t1.length()));
+                            int s2 = Integer.valueOf(t2.substring(19, t2.length()));
+
+                            // Check if seconds values are in inverse order
+                            return Integer.compare(s2, s1);
+                        }));
+                        /***** With standard comparator *******/
+                        /*.areOrdered(new Comparator<Event>()
                         {
                             @Override
                             public int compare(Event lhs, Event rhs)
@@ -233,47 +245,22 @@ public class RxExampleFragment extends Fragment
                                 // Check if seconds values are in inverse order
                                 return Integer.compare(s2, s1);
                             }
-                        }));
+                        }));*/
 
         eventMonitor.checkThat("'End' is written at the wrong moment",
                 anEventThat(isTextChange(countDownView, equalTo("End")))
                     .canHappenOnlyAfter(anEventThat(isTextChange(countDownView, equalTo("seconds remaining: 1")))));
 
         eventMonitor.checkThat("Countdown text is updated even if the activity is paused/stopped",
-                isNotSatisfied(
-                    anEventThat(isTextChange())
-                        .existsBetween(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onPause")), anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onResume")))));
+                allHold(
+                        anEventThat(isTextChange())
+                            .canHappenOnlyBefore(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onPause"))),
+                        anEventThat(isTextChange())
+                                .canHappenOnlyAfter(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onResume")))));
 
         eventMonitor.checkThat("Countdown text is updated before or after the activity callbacks",
                 anEventThat(isTextChange(countDownView, startsWith("seconds remaining: ")))
                     .canHappenOnlyBetween(anEventThat(isCallbackEvent("Activity->Fragment")), anEventThat(isCallbackEvent("Fragment->Activity"))));
-
-
-        /********* FAILING CHECKS *********/
-
-        /*eventMonitor.checkThat("Failing Check 1",
-                anEventThat(isCallbackEvent("ThisCallbackDoesNotExist"))
-                    .exists());
-
-        eventMonitor.checkThat("Failing Check 2",
-                allEventsWhereEach(isTextChangeFrom(countDownView))
-                    .are(atMost(5)));
-
-        eventMonitor.checkThat("Failing Check 3",
-                allEventsWhereEach(isTextChange(countDownView, startsWith("seconds remaining: ")))
-                    .matchInOrder(isTextChange(countDownView, endsWith("9")), isTextChange(countDownView, endsWith("8")), isTextChange(countDownView, endsWith("700")), isTextChange(countDownView, endsWith("6")), isTextChange(countDownView, endsWith("5")), isTextChange(countDownView, endsWith("4")), isTextChange(countDownView, endsWith("3")), isTextChange(countDownView, endsWith("2")), isTextChange(countDownView, endsWith("1"))));
-
-        eventMonitor.checkThat("Failing Check 4",
-                anEventThat(isTextChange(countDownView, equalTo("End")))
-                    .canHappenOnlyBefore(anEventThat(isTextChange(countDownView, equalTo("seconds remaining: 1")))));
-
-        eventMonitor.checkThat("Failing Check 5",
-                anEventThat(isTextChange())
-                    .existsBetween(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onPause")), anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onResume"))));
-
-        eventMonitor.checkThat("Failing Check 6",
-                anEventThat(isTextChangeFrom(countDownView))
-                    .canHappenOnlyBefore(anEventThat(isCallbackEvent("Activity->Fragment"))));*/
     }
 
     private void monitorStartVerification()

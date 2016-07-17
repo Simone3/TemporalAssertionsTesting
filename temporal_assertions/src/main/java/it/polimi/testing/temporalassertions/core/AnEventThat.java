@@ -1,12 +1,13 @@
 package it.polimi.testing.temporalassertions.core;
 
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.Matcher;
 
 import it.polimi.testing.temporalassertions.events.Event;
 
 import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
-import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
 
 /**
  * Descriptor that matches a single event at a time in the sequence
@@ -29,21 +30,6 @@ public class AnEventThat extends AbstractEventDescriptor
     public static AnEventThat anEventThat(Matcher<? extends Event> matcher)
     {
         return new AnEventThat(matcher);
-    }
-
-    /**
-     * Checks that {@code this} exists between {@code eventBefore} and {@code eventAfter}, i.e. there's at
-     * least one {@code this} in the sequence after {@code eventBefore} and before {@code eventAfter}
-     * @param eventBefore the descriptor of the event after which we must find {@code this}
-     * @param eventAfter the descriptor of the event before which we must find {@code this}
-     * @return the check will return SUCCESS if {@code this} exists between {@code eventBefore} and
-     *         {@code eventAfter}, FAILURE if it does not and WARNING if no pair
-     *         {@code eventBefore-eventAfter} has been found in the sequence
-     */
-    public Check existsBetween(final AnEventThat eventBefore, final AnEventThat eventAfter)
-    {
-        return atLeast(1).eventsWhereEach(getMatcher()).mustHappenBetween(eventBefore, eventAfter)
-                .overwriteDescription("An event that "+getMatcher()+" exists between an event that "+eventBefore.getMatcher()+" and an event that "+eventAfter.getMatcher());
     }
 
     /**
@@ -97,6 +83,7 @@ public class AnEventThat extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -188,6 +175,7 @@ public class AnEventThat extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {

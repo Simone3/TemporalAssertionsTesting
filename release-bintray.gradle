@@ -1,0 +1,34 @@
+apply plugin: 'com.android.library'
+
+// Set up everything required for releasing on Bintray
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = POM_ARTIFACT_ID
+    bintrayDescription = POM_DESCRIPTION
+    projectUrl = 'https://github.com/Simone3/TemporalAssertionsTesting'
+    issuesUrl = 'https://github.com/Simone3/TemporalAssertionsTesting/issues'
+    scmUrl = 'https://github.com/Simone3/TemporalAssertionsTesting.git'
+    scmConnection = 'scm:git:https://github.com/Simone3/TemporalAssertionsTesting.git'
+    scmDeveloperConnection = 'scm:git:git@github.com:Simone3/TemporalAssertionsTesting.git'
+
+    publishedGroupId = GROUP
+    libraryName = POM_NAME
+    artifact = POM_ARTIFACT_ID
+
+    developerId = 'simoneg'
+    developerName = 'Simone Graziussi'
+
+    projectLicenses = {
+        license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+        }
+    }
+}
+
+// Set up the Android Maven publication (POM etc.)
+apply from: rootProject.file('gradle/android-maven-install.gradle')
+
+// Upload to Bintray
+apply from: rootProject.file('gradle/bintray.gradle')

@@ -1,6 +1,8 @@
 package it.polimi.testing.temporalassertions.core;
 
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.Matcher;
 
 import it.polimi.testing.temporalassertions.events.Event;
@@ -100,6 +102,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -213,6 +216,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -255,7 +259,6 @@ public class EventsWhereEach extends AbstractEventDescriptor
      * {@code eventBefore-eventAfter} pair. For example
      * {@code exactly(2).eventsWhereEach(m1).mustHappenBetween(anEventThat(m2), anEventThat(m3)} means that
      * between each pair of {@code eventBefore-eventAfter} events there must be 2 {@code this} events.
-     * "Exclusively" means that those 2 events cannot be "shared" by overlapping pairs.
      * @param eventBefore the event after which we must have {@code this} events
      * @param eventAfter the event before which we must have {@code this} events
      * @return the check will return SUCCESS if between each {@code eventBefore-eventAfter} pair we found the
@@ -333,6 +336,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {

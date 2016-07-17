@@ -1,5 +1,7 @@
 package it.polimi.testing.temporalassertions.core;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +113,7 @@ public abstract class CheckConnective extends Check
                 }
             }
 
+            @NonNull
             @Override
             public Result getFinalResult()
             {

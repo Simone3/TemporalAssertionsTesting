@@ -1,5 +1,7 @@
 package it.polimi.testing.simple_example_app.custom_check;
 
+import android.support.annotation.NonNull;
+
 import it.polimi.testing.temporalassertions.core.Check;
 import it.polimi.testing.temporalassertions.core.CheckSubscriber;
 import it.polimi.testing.temporalassertions.core.Outcome;
@@ -24,6 +26,7 @@ class MyCheck extends Check
                         endCheck();
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {

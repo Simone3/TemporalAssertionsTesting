@@ -31,6 +31,8 @@ import rx.subjects.Subject;
 public class EventMonitor
 {
     private final static String TAG = "EventMonitor";
+    private final static String RESULT_TAG = "EventMonitor-RESULT";
+    private final static String EVENT_TAG = "EventMonitor-EVENT";
 
     private Observable<? extends Event> merged;
     private Subscriber<? super Event> subscriber;
@@ -123,7 +125,8 @@ public class EventMonitor
 
     /**
      * Allows to fire an event outside the added observables, useful for example to fire any
-     * custom event without creating an observable just for that
+     * custom event without creating an observable just for that. This method can be called
+     * only after {@link EventMonitor#initialize()} and before {@link EventMonitor#stopVerification()}
      * @param event the event that will be added to the stream
      */
     public void fireCustomEvent(Event event)
@@ -247,20 +250,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                Log.v(TAG, "[-----RESULT-----] All results received");
+                Log.v(RESULT_TAG, "All results received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                Log.v(TAG, "[-----RESULT-----] Error:");
+                Log.v(RESULT_TAG, "Error:");
                 e.printStackTrace();
             }
 
             @Override
             public void onNext(Result result)
             {
-                Log.v(TAG, "[-----RESULT-----] "+result);
+                Log.v(RESULT_TAG, result.toString());
             }
         };
     }
@@ -337,20 +340,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                Log.v(TAG, "[---EVENT---] All events received");
+                Log.v(EVENT_TAG, "All events received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                Log.v(TAG, "[---EVENT---] Error:");
+                Log.v(EVENT_TAG, "Error:");
                 e.printStackTrace();
             }
 
             @Override
             public void onNext(Event event)
             {
-                Log.v(TAG, "[---EVENT---] "+event);
+                Log.v(EVENT_TAG, event.toString());
             }
         };
     }

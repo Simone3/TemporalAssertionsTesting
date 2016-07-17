@@ -1,5 +1,7 @@
 package it.polimi.testing.temporalassertions.core;
 
+import android.support.annotation.NonNull;
+
 import it.polimi.testing.temporalassertions.events.Event;
 import rx.Subscriber;
 
@@ -71,7 +73,7 @@ public abstract class CheckSubscriber extends Subscriber<Event>
      * Allows to build the final result of the check, based on its logic
      * @return the single final result of the check
      */
-    public abstract Result getFinalResult();
+    public abstract @NonNull Result getFinalResult();
 
     /**
      * Allows the caller to set the child that will receive the check result

@@ -27,7 +27,7 @@ public class Not extends CheckConnective
      * @param check the check to be inverted
      * @return the inverted check: !C
      */
-    public static Not isNotSatisfied(Check check)
+    public static Check isNotSatisfied(Check check)
     {
         return new Not(check);
     }

@@ -1,6 +1,8 @@
 package it.polimi.testing.temporalassertions.core;
 
 
+import android.support.annotation.NonNull;
+
 import org.hamcrest.Matcher;
 
 import java.util.Comparator;
@@ -60,6 +62,7 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -133,6 +136,7 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
@@ -213,6 +217,7 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
                         }
                     }
 
+                    @NonNull
                     @Override
                     public Result getFinalResult()
                     {
