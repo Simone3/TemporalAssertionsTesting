@@ -250,20 +250,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                Log.v(RESULT_TAG, "All results received");
+                Log.i(RESULT_TAG, "All results received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                Log.v(RESULT_TAG, "Error:");
+                Log.e(RESULT_TAG, "Error:");
                 e.printStackTrace();
             }
 
             @Override
             public void onNext(Result result)
             {
-                Log.v(RESULT_TAG, result.toString());
+                Log.i(RESULT_TAG, result.toString());
             }
         };
     }
@@ -340,20 +340,20 @@ public class EventMonitor
             @Override
             public void onCompleted()
             {
-                Log.v(EVENT_TAG, "All events received");
+                Log.i(EVENT_TAG, "All events received");
             }
 
             @Override
             public void onError(Throwable e)
             {
-                Log.v(EVENT_TAG, "Error:");
+                Log.e(EVENT_TAG, "Error:");
                 e.printStackTrace();
             }
 
             @Override
             public void onNext(Event event)
             {
-                Log.v(EVENT_TAG, event.toString());
+                Log.i(EVENT_TAG, event.toString());
             }
         };
     }

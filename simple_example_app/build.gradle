@@ -33,7 +33,15 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
+
     compile project(path: ':temporal_assertions')
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-design:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.4.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-leanback-v17:0.4.0'
+
     testCompile "org.robolectric:robolectric:3.0"
     testCompile 'com.jayway.awaitility:awaitility:1.7.0'
     androidTestCompile 'com.jayway.awaitility:awaitility:1.7.0'
