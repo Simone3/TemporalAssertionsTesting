@@ -145,7 +145,7 @@ public class AnEventThatTest
     {
         String[] events = new String[]{"A", "B", "C", "D", "E", "F"};
         Check check = anEventThat(is("G")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("E")));
-        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
+        assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
 
     @Test
@@ -184,6 +184,14 @@ public class AnEventThatTest
     public void testCanHappenOnlyBetween_MultipleMatchesFailure()
     {
         String[] events = new String[]{"A", "B", "C", "C", "A", "A", "B", "A", "A", "A"};
+        Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("C")));
+        assertThatOutcomeIs(events, check, Outcome.FAILURE);
+    }
+
+    @Test
+    public void testCanHappenOnlyBetween_MultipleMatchesFailure2()
+    {
+        String[] events = new String[]{"A", "F", "B", "B", "C", "F", "B", "A", "B", "C"};
         Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("C")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
     }
