@@ -3,7 +3,6 @@ package it.polimi.testing.temporalassertions.core;
 import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import it.polimi.testing.temporalassertions.events.Event;
@@ -94,30 +93,12 @@ public abstract class AbstractEventDescriptor
 
         /**
          * Setter
-         * @param events the events stored in the object
+         * @param events the event(s) to be set in the state
          */
-        public void setEvents(List<Event> events)
-        {
-            this.events = events;
-        }
-
-        /**
-         * Setter
-         * @param events the events stored in the object
-         */
-        public void setEvents(Event[] events)
-        {
-            this.events = Arrays.asList(events);
-        }
-
-        /**
-         * Setter
-         * @param singleEvent the single event to store in the object
-         */
-        public void setEvents(Event singleEvent)
+        public void setEvents(Event... events)
         {
             clearEvents();
-            addEvent(singleEvent);
+            for(Event e: events) addEvent(e);
         }
 
         /**

@@ -215,15 +215,14 @@ public class AnEventThat extends AbstractEventDescriptor
     }
 
     /**
-     * Checks that {@code this} is ONLY between {@code eventBetween} and {@code eventAfter}, i.e. there
-     * cannot be any {@code this} outside every {@code eventAfter}-{@code eventBefore} pair
-     * @param eventBefore the descriptor of the event before which we cannot find {@code this}, i.e. first
+     * Checks that {@code this} is ONLY between {@code eventBefore} and {@code eventAfter}, i.e. there
+     * cannot be any {@code this} outside every {@code eventAfter}-{@code eventAfter} pair
+     * @param eventBefore the descriptor of the event eventBefore which we cannot find {@code this}, i.e. first
      *                    element of the pair
      * @param eventAfter the descriptor of the event after which we cannot find {@code this}, i.e. second
      *                   element of the pair
-     * @return the check will return SUCCESS if every {@code this} is before a {@code eventAfter} and after
-     *         a {@code eventBefore} or is not in the sequence at all, FAILURE if there's at least one
-     *         after {@code eventAfter} or before {@code eventBefore}
+     * @return the check will return SUCCESS if every {@code this} is inside a {@code eventAfter}-{@code eventAfter}
+     *         pair, FAILURE if there's at least one outside, WARNING if no {@code this} is found in the sequence
      */
     public Check canHappenOnlyBetween(final AnEventThat eventBefore, final AnEventThat eventAfter)
     {
@@ -331,6 +330,145 @@ public class AnEventThat extends AbstractEventDescriptor
 
                                 outcome = Outcome.FAILURE;
                                 report = "Event "+state.getEvent(0)+" was found outside a pair";
+
+                                break;
+                        }
+
+                        return new Result(outcome, report);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Equivalent to {@link AnEventThat#canHappenOnlyBefore(AnEventThat)}
+     */
+    public Check cannotHappenAfter(final AnEventThat eventBefore)
+    {
+        return canHappenOnlyBefore(eventBefore);
+    }
+
+    /**
+     * Equivalent to {@link AnEventThat#canHappenOnlyAfter(AnEventThat)}
+     */
+    public Check cannotHappenBefore(final AnEventThat eventAfter)
+    {
+        return canHappenOnlyAfter(eventAfter);
+    }
+
+    /**
+     * Checks that {@code this} is never between {@code eventBefore} and {@code eventAfter}, i.e. all
+     * {@code this} (if any) must be outside every {@code eventBefore}-{@code eventAfter} pair
+     * @param eventBefore the descriptor of the event after which we cannot find {@code this}, i.e. first
+     *                    element of the pair
+     * @param eventAfter the descriptor of the event before which we cannot find {@code this}, i.e. second
+     *                   element of the pair
+     * @return the check will return SUCCESS if every {@code this} is outside a {@code eventAfter}-{@code eventAfter}
+     *         pair, FAILURE if there's at least one inside, WARNING if no {@code this} is found in the sequence
+     */
+    public Check cannotHappenBetween(final AnEventThat eventBefore, final AnEventThat eventAfter)
+    {
+        return new Check(
+                "No event that "+getMatcher()+" happens between a pair of events where the first "+eventBefore.getMatcher()+" and the second "+eventAfter.getMatcher(),
+
+                new CheckSubscriber()
+                {
+                    private final static int OUTSIDE_PAIR = 0;
+                    private final static int INSIDE_PAIR = 1;
+                    private final static int FOUND_E1_INSIDE = 2;
+
+                    private final State state = new State(OUTSIDE_PAIR);
+
+                    private boolean foundAtLeastOneE1 = false;
+                    private int eventsInCurrentPair = 0;
+
+                    @Override
+                    public void onNext(Event event)
+                    {
+                        switch(state.getState())
+                        {
+                            case OUTSIDE_PAIR:
+
+                                // If "eventBefore" is found, start a pair
+                                if(eventBefore.getMatcher().matches(event))
+                                {
+                                    state.setState(INSIDE_PAIR);
+                                    state.setEvents(event);
+                                }
+
+                                // Set flag for warning if "this" is found
+                                else if(!foundAtLeastOneE1 && getMatcher().matches(event))
+                                {
+                                    foundAtLeastOneE1 = true;
+                                }
+
+                                break;
+
+                            case INSIDE_PAIR:
+
+                                // If "eventAfter" is found...
+                                if(eventAfter.getMatcher().matches(event))
+                                {
+                                    // If we found at least one "this", failure
+                                    if(eventsInCurrentPair>0)
+                                    {
+                                        state.setState(FOUND_E1_INSIDE);
+                                        state.addEvent(event);
+                                        endCheck();
+                                    }
+
+                                    // Otherwise, end pair
+                                    else
+                                    {
+                                        state.setState(OUTSIDE_PAIR);
+                                        state.clearEvents();
+                                    }
+                                }
+
+                                // Count the "this" in the current pair
+                                else if(getMatcher().matches(event))
+                                {
+                                    eventsInCurrentPair++;
+                                    foundAtLeastOneE1 = true;
+                                }
+
+                                break;
+                        }
+                    }
+
+                    @NonNull
+                    @Override
+                    public Result getFinalResult()
+                    {
+                        Outcome outcome = null;
+                        String report = null;
+                        switch(state.getState())
+                        {
+                            // If we are in the error state, failure
+                            case FOUND_E1_INSIDE:
+
+                                outcome = Outcome.FAILURE;
+                                report = eventsInCurrentPair+" event(s) where each "+getMatcher()+" were found inside the pair "+state.getEvent(0)+" - "+state.getEvent(1);
+
+                                break;
+
+                            // Otherwise
+                            case OUTSIDE_PAIR:
+                            case INSIDE_PAIR:
+
+                                // Success if we found at least one "this" (outside any pair)
+                                if(foundAtLeastOneE1)
+                                {
+                                    outcome = Outcome.SUCCESS;
+                                    report = "Every event that "+getMatcher()+" was found outside a pair";
+                                }
+
+                                // Warning if no "this" has been found in the sequence
+                                else
+                                {
+                                    outcome = Outcome.WARNING;
+                                    report = "No event that "+getMatcher()+" was found in the sequence";
+                                }
 
                                 break;
                         }
