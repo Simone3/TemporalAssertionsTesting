@@ -265,8 +265,19 @@ public class AnEventThat extends AbstractEventDescriptor
 
                             case INSIDE_PAIR:
 
+                                // Get matches
+                                boolean isEventBefore = eventBefore.getMatcher().matches(event);
+                                boolean isEventAfter = eventAfter.getMatcher().matches(event);
+                                boolean isBoth = isEventBefore && isEventAfter;
+
+                                // If it's both "eventBefore" and "eventAfter", just reset the count
+                                if(isBoth)
+                                {
+                                    eventsInCurrentPair = 0;
+                                }
+
                                 // If "eventAfter" is found, end a pair
-                                if(eventAfter.getMatcher().matches(event))
+                                else if(isEventAfter)
                                 {
                                     state.setState(OUTSIDE_PAIR);
                                     eventsInCurrentPair = 0;

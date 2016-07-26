@@ -9,7 +9,9 @@ import static it.polimi.testing.temporalassertions.core.AtLeast.atLeast;
 import static it.polimi.testing.temporalassertions.core.AtMost.atMost;
 import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.ends;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.starts;
 
 public class EventsWhereEachTest
 {
@@ -301,6 +303,14 @@ public class EventsWhereEachTest
         String[] events = new String[]{"A", "B", "D", "C", "D", "F", "B", "B", "D", "G", "D", "D", "F", "B"};
         Check check = exactly(2).eventsWhereEach(is("D")).mustHappenBetween(anEventThat(is("B")), anEventThat(is("F")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
+    }
+
+    @Test
+    public void testExactlyMustHappenBetween_EventIsBothAfterAndBefore()
+    {
+        String[] events = new String[]{"A", "B1", "D", "C", "D", "BF", "D", "G", "D", "T", "1F", "B4"};
+        Check check = exactly(2).eventsWhereEach(is("D")).mustHappenBetween(anEventThat(starts("B")), anEventThat(ends("F")));
+        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     @Test

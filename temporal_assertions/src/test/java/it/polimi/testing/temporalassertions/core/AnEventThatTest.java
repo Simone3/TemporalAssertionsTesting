@@ -3,8 +3,10 @@ package it.polimi.testing.temporalassertions.core;
 import org.junit.Test;
 
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.ends;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.starts;
 
 public class AnEventThatTest
 {
@@ -194,6 +196,14 @@ public class AnEventThatTest
         String[] events = new String[]{"A", "F", "B", "B", "C", "F", "B", "A", "B", "C"};
         Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(is("A")), anEventThat(is("C")));
         assertThatOutcomeIs(events, check, Outcome.FAILURE);
+    }
+
+    @Test
+    public void testCanHappenOnlyBetween_EventIsBothAfterAndBefore()
+    {
+        String[] events = new String[]{"A1", "B", "F", "B", "AC", "F", "B", "1C", "A1", "A3"};
+        Check check = anEventThat(is("B")).canHappenOnlyBetween(anEventThat(starts("A")), anEventThat(ends("C")));
+        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 
     /**********************************************

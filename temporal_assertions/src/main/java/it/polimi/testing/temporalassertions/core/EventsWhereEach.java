@@ -306,30 +306,62 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                     quantifier.increaseCounter();
                                 }
 
-                                // If we match an "eventAfter" event...
-                                else if(eventAfter.getMatcher().matches(event))
+                                else
                                 {
-                                    // Go back to CORRECT if the condition is met
-                                    if(quantifier.isConditionMet())
+                                    // Get matches
+                                    boolean isEventBefore = eventBefore.getMatcher().matches(event);
+                                    boolean isEventAfter = eventAfter.getMatcher().matches(event);
+                                    boolean isBoth = isEventBefore && isEventAfter;
+
+                                    // If it's both "eventBefore" and "eventAfter"...
+                                    if(isBoth)
+                                    {
+                                        foundAtLeastOnePair = true;
+
+                                        // Simply reset the counter if the condition is met
+                                        if(quantifier.isConditionMet())
+                                        {
+                                            quantifier.resetCounter();
+                                            state.setEvents(event);
+                                        }
+
+                                        // Error otherwise
+                                        else
+                                        {
+                                            state.setState(CONDITION_NOT_MET);
+                                            state.addEvent(event);
+                                            endCheck();
+                                        }
+                                    }
+
+                                    // If we match an "eventAfter" event...
+                                    else if(isEventAfter)
+                                    {
+
+                                        foundAtLeastOnePair = true;
+
+                                        // Go back to CORRECT if the condition is met
+                                        if(quantifier.isConditionMet())
+                                        {
+                                            quantifier.resetCounter();
+                                            state.setState(CORRECT);
+                                        }
+
+                                        // Error otherwise
+                                        else
+                                        {
+                                            state.setState(CONDITION_NOT_MET);
+                                            state.addEvent(event);
+                                            endCheck();
+                                        }
+                                    }
+
+                                    // If we match another "eventBefore" before we find an "eventAfter", simply reset the counter
+                                    else if(isEventBefore)
                                     {
                                         quantifier.resetCounter();
-                                        state.setState(CORRECT);
-                                        foundAtLeastOnePair = true;
+                                        state.setEvents(event);
                                     }
-
-                                    // Error otherwise
-                                    else
-                                    {
-                                        state.setState(CONDITION_NOT_MET);
-                                        state.addEvent(event);
-                                        endCheck();
-                                    }
-                                }
-
-                                // If we match another "eventBefore" before we find an "eventAfter", simply reset the counter
-                                else if(eventBefore.getMatcher().matches(event))
-                                {
-                                    quantifier.resetCounter();
                                 }
 
                                 break;

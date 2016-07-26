@@ -82,32 +82,62 @@ public class ExistBetweenConstraint extends AbstractExistConstraint
                                     quantifier.increaseCounter();
                                 }
 
-                                // If we get an "eventAfter"...
-                                else if(eventAfter.getMatcher().matches(event))
+                                else
                                 {
-                                    atLeastOnePair = true;
+                                    // Get matches
+                                    boolean isEventBefore = eventBefore.getMatcher().matches(event);
+                                    boolean isEventAfter = eventAfter.getMatcher().matches(event);
+                                    boolean isBoth = isEventBefore && isEventAfter;
 
-                                    // Exit with success if the condition is met
-                                    if(quantifier.isConditionMet())
+                                    // If it's both "eventBefore" and "eventAfter"...
+                                    if(isBoth)
                                     {
-                                        state.setState(CONDITION_MET);
-                                        state.addEvent(event);
-                                        endCheck();
+                                        atLeastOnePair = true;
+
+                                        // Exit with success if the condition is met
+                                        if(quantifier.isConditionMet())
+                                        {
+                                            state.setState(CONDITION_MET);
+                                            state.addEvent(event);
+                                            endCheck();
+                                        }
+
+                                        // Otherwise simply reset counter
+                                        else
+                                        {
+                                            quantifier.resetCounter();
+                                            state.setEvents(event);
+                                        }
                                     }
 
-                                    // Otherwise restart everything
-                                    else
+                                    // If we get an "eventAfter"...
+                                    else if(isEventAfter)
+                                    {
+                                        atLeastOnePair = true;
+
+                                        // Exit with success if the condition is met
+                                        if(quantifier.isConditionMet())
+                                        {
+                                            state.setState(CONDITION_MET);
+                                            state.addEvent(event);
+                                            endCheck();
+                                        }
+
+                                        // Otherwise restart everything
+                                        else
+                                        {
+                                            quantifier.resetCounter();
+                                            state.setState(BEFORE);
+                                            state.clearEvents();
+                                        }
+                                    }
+
+                                    // If we get an "eventBefore" again before we get an "eventAfter", simply reset the counter
+                                    else if(isEventBefore)
                                     {
                                         quantifier.resetCounter();
-                                        state.setState(BEFORE);
-                                        state.clearEvents();
+                                        state.setEvents(event);
                                     }
-                                }
-
-                                // If we get an "eventBefore" again before we get an "eventAfter", simply reset the counter
-                                else if(eventBefore.getMatcher().matches(event))
-                                {
-                                    quantifier.resetCounter();
                                 }
 
                                 break;

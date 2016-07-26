@@ -12,7 +12,9 @@ import static it.polimi.testing.temporalassertions.core.ExistAfterConstraint.aft
 import static it.polimi.testing.temporalassertions.core.ExistBeforeConstraint.before;
 import static it.polimi.testing.temporalassertions.core.ExistBetweenConstraint.between;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.assertThatOutcomeIs;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.ends;
 import static it.polimi.testing.temporalassertions.core.RxTestUtils.is;
+import static it.polimi.testing.temporalassertions.core.RxTestUtils.starts;
 
 public class ExistTest
 {
@@ -241,6 +243,14 @@ public class ExistTest
     {
         String[] events = new String[]{"Z", "X", "A", "B", "C", "A", "D", "A", "E", "A", "F", "Y", "X", "A", "A", "F", "Y", "F", "X", "A", "A", "A", "Y", "F"};
         Check check = exist(between(anEventThat(is("X")), anEventThat(is("Y"))), exactly(3)).eventsWhereEach(is("A"));
+        assertThatOutcomeIs(events, check, Outcome.SUCCESS);
+    }
+
+    @Test
+    public void testExistBetween_EventIsBothAfterAndBefore()
+    {
+        String[] events = new String[]{"Z", "X1", "A", "B", "C", "A", "D", "A", "E", "A", "F", "1Y", "X2", "A", "A", "F", "XY", "F", "A", "A", "A", "2Y", "F"};
+        Check check = exist(between(anEventThat(starts("X")), anEventThat(ends("Y"))), exactly(3)).eventsWhereEach(is("A"));
         assertThatOutcomeIs(events, check, Outcome.SUCCESS);
     }
 }
