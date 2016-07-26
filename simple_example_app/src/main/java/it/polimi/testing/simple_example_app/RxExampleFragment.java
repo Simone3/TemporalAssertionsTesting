@@ -16,8 +16,8 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
 import it.polimi.testing.temporalassertions.events.Event;
-import it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
+import it.polimi.testing.temporalassertions.events.SupportFragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
 import rx.Observable;
 import rx.functions.Func1;
@@ -28,7 +28,7 @@ import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.core.Exactly.exactly;
 import static it.polimi.testing.temporalassertions.core.Exist.exist;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
-import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.isFragmentLifecycleEvent;
+import static it.polimi.testing.temporalassertions.events.SupportFragmentLifecycleEvent.isSupportFragmentLifecycleEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChange;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeFrom;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -57,7 +57,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onCreate"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onCreate"));
 
         super.onCreate(savedInstanceState);
         if(getArguments()!=null)
@@ -69,7 +69,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onCreateView"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onCreateView"));
 
         View view = inflater.inflate(R.layout.fragment_rx_example, container, false);
 
@@ -84,7 +84,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onAttach(Context context)
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onAttach"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onAttach"));
 
         super.onAttach(context);
         if(context instanceof OnCountDownEnded)
@@ -101,7 +101,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onDetach()
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onDetach"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onDetach"));
 
         super.onDetach();
         listener = null;
@@ -110,7 +110,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onResume()
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onResume"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onResume"));
 
         super.onResume();
         if(countDownStarted && countDownTimer==null)
@@ -122,7 +122,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onPause()
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onPause"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onPause"));
 
         super.onPause();
         if(countDownTimer!=null)
@@ -135,7 +135,7 @@ public class RxExampleFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle s)
     {
-        EventMonitor.getInstance().fireCustomEvent(new FragmentLifecycleEvent(RxExampleFragment.class, "onSaveInstanceState"));
+        EventMonitor.getInstance().fireCustomEvent(new SupportFragmentLifecycleEvent(RxExampleFragment.class, "onSaveInstanceState"));
 
         s.putBoolean(COUNT_DOWN_STARTED, countDownStarted);
         super.onSaveInstanceState(s);
@@ -254,9 +254,9 @@ public class RxExampleFragment extends Fragment
         eventMonitor.checkThat("Countdown text is updated even if the activity is paused/stopped",
                 allHold(
                         anEventThat(isTextChange())
-                            .canHappenOnlyBefore(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onPause"))),
+                            .canHappenOnlyBefore(anEventThat(isSupportFragmentLifecycleEvent(RxExampleFragment.class, "onPause"))),
                         anEventThat(isTextChange())
-                                .canHappenOnlyAfter(anEventThat(isFragmentLifecycleEvent(RxExampleFragment.class, "onResume")))));
+                                .canHappenOnlyAfter(anEventThat(isSupportFragmentLifecycleEvent(RxExampleFragment.class, "onResume")))));
 
         eventMonitor.checkThat("Countdown text is updated before or after the activity callbacks",
                 anEventThat(isTextChange(countDownView, startsWith("seconds remaining: ")))

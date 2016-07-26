@@ -2,7 +2,7 @@ package it.polimi.testing.temporalassertions.events;
 
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.widget.TextView;
 
 import org.hamcrest.CoreMatchers;

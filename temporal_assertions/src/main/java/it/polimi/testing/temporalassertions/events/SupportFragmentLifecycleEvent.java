@@ -1,6 +1,6 @@
 package it.polimi.testing.temporalassertions.events;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
@@ -11,9 +11,9 @@ import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
- * Lifecycle change event for fragments
+ * Lifecycle change event for fragments (support library)
  */
-public class FragmentLifecycleEvent extends CallbackEvent
+public class SupportFragmentLifecycleEvent extends CallbackEvent
 {
     private final Class<? extends Fragment> fragmentClass;
 
@@ -22,7 +22,7 @@ public class FragmentLifecycleEvent extends CallbackEvent
      * @param fragmentClass the class of the fragment
      * @param callbackName the name of the lifecycle callback
      */
-    public FragmentLifecycleEvent(Class<? extends Fragment> fragmentClass, String callbackName)
+    public SupportFragmentLifecycleEvent(Class<? extends Fragment> fragmentClass, String callbackName)
     {
         super(callbackName);
         this.fragmentClass = fragmentClass;
@@ -52,9 +52,9 @@ public class FragmentLifecycleEvent extends CallbackEvent
      * @param callbackName the name of the lifecycle callback
      * @return the Hamcrest matcher
      */
-    public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent(final Class<? extends Fragment> fragmentClass, final String callbackName)
+    public static Matcher<SupportFragmentLifecycleEvent> isSupportFragmentLifecycleEvent(final Class<? extends Fragment> fragmentClass, final String callbackName)
     {
-        return both(isFragmentLifecycleEvent(fragmentClass)).and(isFragmentLifecycleEvent(callbackName));
+        return both(isSupportFragmentLifecycleEvent(fragmentClass)).and(isSupportFragmentLifecycleEvent(callbackName));
     }
 
     /**
@@ -62,12 +62,12 @@ public class FragmentLifecycleEvent extends CallbackEvent
      * @param callbackName the name of the lifecycle callback
      * @return the Hamcrest matcher
      */
-    public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent(final String callbackName)
+    public static Matcher<SupportFragmentLifecycleEvent> isSupportFragmentLifecycleEvent(final String callbackName)
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, String>(equalTo(callbackName), "is a fragment lifecycle event", "callback name")
+        return new FeatureMatcher<SupportFragmentLifecycleEvent, String>(equalTo(callbackName), "is a fragment lifecycle event", "callback name")
         {
             @Override
-            protected String featureValueOf(final FragmentLifecycleEvent actual)
+            protected String featureValueOf(final SupportFragmentLifecycleEvent actual)
             {
                 return actual.getCallbackName();
             }
@@ -79,12 +79,12 @@ public class FragmentLifecycleEvent extends CallbackEvent
      * @param fragmentClass the fragment linked with the event
      * @return the Hamcrest matcher
      */
-    public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent(final Class<? extends Fragment> fragmentClass)
+    public static Matcher<SupportFragmentLifecycleEvent> isSupportFragmentLifecycleEvent(final Class<? extends Fragment> fragmentClass)
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, Class<? extends Fragment>>(IsEqual.<Class<? extends Fragment>>equalTo(fragmentClass), "is a fragment lifecycle event from", "fragment class")
+        return new FeatureMatcher<SupportFragmentLifecycleEvent, Class<? extends Fragment>>(IsEqual.<Class<? extends Fragment>>equalTo(fragmentClass), "is a fragment lifecycle event from", "fragment class")
         {
             @Override
-            protected Class<? extends Fragment> featureValueOf(final FragmentLifecycleEvent actual)
+            protected Class<? extends Fragment> featureValueOf(final SupportFragmentLifecycleEvent actual)
             {
                 return actual.getFragmentClass();
             }
@@ -95,12 +95,12 @@ public class FragmentLifecycleEvent extends CallbackEvent
      * Hamcrest matcher that matches any fragment lifecycle event (any fragment and any callback name)
      * @return the Hamcrest matcher
      */
-    public static Matcher<FragmentLifecycleEvent> isFragmentLifecycleEvent()
+    public static Matcher<SupportFragmentLifecycleEvent> isSupportFragmentLifecycleEvent()
     {
-        return new FeatureMatcher<FragmentLifecycleEvent, String>(anything(""), "is any fragment lifecycle event", "")
+        return new FeatureMatcher<SupportFragmentLifecycleEvent, String>(anything(""), "is any fragment lifecycle event", "")
         {
             @Override
-            protected String featureValueOf(final FragmentLifecycleEvent actual)
+            protected String featureValueOf(final SupportFragmentLifecycleEvent actual)
             {
                 return null;
             }
