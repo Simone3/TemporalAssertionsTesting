@@ -243,9 +243,9 @@ public class AnEventThatTest
     }
 
     @Test
-    public void testCannotHappenBetween_NoM1()
+    public void testCannotHappenBetween_NoPair()
     {
-        String[] events = new String[]{"X", "A", "F", "X", "C", "X", "X", "A", "C", "X"};
+        String[] events = new String[]{"B", "X", "F", "B", "X", "B", "B", "X", "X", "X"};
         Check check = anEventThat(is("B")).cannotHappenBetween(anEventThat(is("A")), anEventThat(is("C")));
         assertThatOutcomeIs(events, check, Outcome.WARNING);
     }
