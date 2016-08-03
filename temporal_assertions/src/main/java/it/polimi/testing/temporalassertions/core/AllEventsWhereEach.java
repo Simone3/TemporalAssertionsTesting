@@ -14,13 +14,13 @@ import it.polimi.testing.temporalassertions.events.Event;
  * Descriptor that describes all the events in the whole sequence that match the given
  * Hamcrest matcher
  */
-public class AllEventsWhereEach extends AbstractEventDescriptor
+public class AllEventsWhereEach<T extends Event> extends AbstractEventDescriptor
 {
     /**
      * Constructor
      * @param matcher the Hamcrest matcher to recognize the events
      */
-    private AllEventsWhereEach(Matcher<? extends Event> matcher)
+    public AllEventsWhereEach(Matcher<T> matcher)
     {
         super(matcher);
     }
@@ -30,9 +30,9 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
      * @param matcher the Hamcrest matcher to recognize the events
      * @return the descriptor of all events
      */
-    public static AllEventsWhereEach allEventsWhereEach(Matcher<? extends Event> matcher)
+    public static <T extends Event> AllEventsWhereEach<T> allEventsWhereEach(Matcher<T> matcher)
     {
-        return new AllEventsWhereEach(matcher);
+        return new AllEventsWhereEach<>(matcher);
     }
 
     /**
@@ -94,7 +94,7 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
      *         if there are more/less events than the number of matchers
      */
     @SafeVarargs
-    public final Check matchInOrder(final Matcher<? extends Event>... matchers)
+    public final Check matchInOrder(final Matcher<T>... matchers)
     {
         return new Check(
                 "All events where each "+getMatcher()+" satisfy in order "+Utils.arrayToString(matchers),
@@ -185,7 +185,7 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
      * @return the check will return SUCCESS if all comparisons return a value <= 0, FAILURE if at least one
      *         returns a value > 0, WARNING if no events of the given type were found in the sequence
      */
-    public final Check areOrdered(final Comparator<Event> comparator)
+    public final Check areOrdered(final Comparator<T> comparator)
     {
         return new Check(
                 "All events where each "+getMatcher()+" are in the order defined by the comparator: "+comparator,
@@ -194,26 +194,37 @@ public class AllEventsWhereEach extends AbstractEventDescriptor
                 {
                     private boolean matchedAtLeastOneEvent = false;
                     private boolean wrongOrder = false;
-                    private Event wrongEvent;
-                    private Event previousEvent = null;
+                    private T wrongEvent;
+                    private T previousEvent = null;
 
                     @Override
+                    @SuppressWarnings("unchecked")
                     public void onNext(Event event)
                     {
+                        T interestingEvent;
+                        try
+                        {
+                            interestingEvent = (T) event;
+                        }
+                        catch(ClassCastException e)
+                        {
+                            return;
+                        }
+
                         // If we have a match...
-                        if(getMatcher().matches(event))
+                        if(getMatcher().matches(interestingEvent))
                         {
                             matchedAtLeastOneEvent = true;
 
                             // If the order is wrong, exit
-                            if(previousEvent!=null && comparator.compare(previousEvent, event)>0)
+                            if(previousEvent!=null && comparator.compare(previousEvent, interestingEvent)>0)
                             {
                                 wrongOrder = true;
-                                wrongEvent = event;
+                                wrongEvent = interestingEvent;
                                 endCheck();
                             }
 
-                            previousEvent = event;
+                            previousEvent = interestingEvent;
                         }
                     }
 

@@ -97,10 +97,10 @@ public class ActivityLifecycleEvent extends CallbackEvent
      */
     public static Matcher<ActivityLifecycleEvent> isActivityLifecycleEvent()
     {
-        return new FeatureMatcher<ActivityLifecycleEvent, String>(anything(""), "is any activity lifecycle event", "")
+        return new FeatureMatcher<ActivityLifecycleEvent, Void>(anything(""), "is any activity lifecycle event", "")
         {
             @Override
-            protected String featureValueOf(final ActivityLifecycleEvent actual)
+            protected Void featureValueOf(final ActivityLifecycleEvent actual)
             {
                 return null;
             }

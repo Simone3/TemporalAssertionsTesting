@@ -97,10 +97,10 @@ public class SupportFragmentLifecycleEvent extends CallbackEvent
      */
     public static Matcher<SupportFragmentLifecycleEvent> isSupportFragmentLifecycleEvent()
     {
-        return new FeatureMatcher<SupportFragmentLifecycleEvent, String>(anything(""), "is any fragment lifecycle event", "")
+        return new FeatureMatcher<SupportFragmentLifecycleEvent, Void>(anything(""), "is any fragment lifecycle event", "")
         {
             @Override
-            protected String featureValueOf(final SupportFragmentLifecycleEvent actual)
+            protected Void featureValueOf(final SupportFragmentLifecycleEvent actual)
             {
                 return null;
             }

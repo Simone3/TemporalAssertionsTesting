@@ -63,10 +63,10 @@ public class CallbackEvent extends Event
      */
     public static Matcher<CallbackEvent> isCallbackEvent()
     {
-        return new FeatureMatcher<CallbackEvent, String>(anything(""), "is any callback event", "")
+        return new FeatureMatcher<CallbackEvent, Void>(anything(""), "is any callback event", "")
         {
             @Override
-            protected String featureValueOf(final CallbackEvent actual)
+            protected Void featureValueOf(final CallbackEvent actual)
             {
                 return null;
             }

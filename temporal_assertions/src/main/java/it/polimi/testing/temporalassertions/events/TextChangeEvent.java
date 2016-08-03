@@ -109,12 +109,12 @@ public class TextChangeEvent extends Event
      */
     public static Matcher<TextChangeEvent> isTextChange()
     {
-        return new FeatureMatcher<TextChangeEvent, String>(anything(""), "is any text change event", "")
+        return new FeatureMatcher<TextChangeEvent, Void>(anything(""), "is any text change event", "")
         {
             @Override
-            protected String featureValueOf(final TextChangeEvent actual)
+            protected Void featureValueOf(final TextChangeEvent actual)
             {
-                return "";
+                return null;
             }
         };
     }

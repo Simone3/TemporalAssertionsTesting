@@ -89,10 +89,10 @@ public class GenericEvent extends Event
      */
     public static Matcher<GenericEvent> isGenericEvent()
     {
-        return new FeatureMatcher<GenericEvent, Object[]>(anything(""), "is any generic event", "")
+        return new FeatureMatcher<GenericEvent, Void>(anything(""), "is any generic event", "")
         {
             @Override
-            protected Object[] featureValueOf(final GenericEvent actual)
+            protected Void featureValueOf(final GenericEvent actual)
             {
                 return null;
             }

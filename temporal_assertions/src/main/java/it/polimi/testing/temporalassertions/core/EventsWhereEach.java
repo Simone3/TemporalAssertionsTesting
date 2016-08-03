@@ -152,7 +152,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                             case CONDITION_NOT_MET:
 
                                 outcome = Outcome.FAILURE;
-                                report = quantifier.getCounter()+" events where each "+eventBefore.getMatcher()+" were found after "+state.getEvent(0);
+                                report = quantifier.getCounter()+" events where each "+getMatcher()+" were found after "+state.getEvent(0);
 
                                 break;
                         }

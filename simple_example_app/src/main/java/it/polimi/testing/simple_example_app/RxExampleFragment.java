@@ -15,7 +15,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 
 import it.polimi.testing.temporalassertions.core.EventMonitor;
 import it.polimi.testing.temporalassertions.events.CallbackEvent;
-import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 import it.polimi.testing.temporalassertions.events.SupportFragmentLifecycleEvent;
 import it.polimi.testing.temporalassertions.events.TextChangeEvent;
@@ -217,10 +216,10 @@ public class RxExampleFragment extends Fragment
         eventMonitor.checkThat("Countdown values are in the wrong order [areOrdered example]",
                 allEventsWhereEach(isTextChange(countDownView, startsWith("seconds remaining: ")))
                         /****** With Lambda (Java 8) ******/
-                        .areOrdered((Event lhs, Event rhs) ->
+                        .areOrdered((TextChangeEvent lhs, TextChangeEvent rhs) ->
                         {
-                            String t1 = ((TextChangeEvent) lhs).getText();
-                            String t2 = ((TextChangeEvent) rhs).getText();
+                            String t1 = lhs.getText();
+                            String t2 = rhs.getText();
 
                             // Get seconds in string
                             int s1 = Integer.valueOf(t1.substring(19, t1.length()));

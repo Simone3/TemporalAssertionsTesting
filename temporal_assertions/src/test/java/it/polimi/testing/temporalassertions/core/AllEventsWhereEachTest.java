@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import java.util.Comparator;
 
-import it.polimi.testing.temporalassertions.events.Event;
 import it.polimi.testing.temporalassertions.events.GenericEvent;
 
 import static it.polimi.testing.temporalassertions.core.AllEventsWhereEach.allEventsWhereEach;
@@ -56,16 +55,16 @@ public class AllEventsWhereEachTest
      **********************************************/
 
     // Helper to get the comparator used in the tests
-    private Comparator<Event> getComparator()
+    private Comparator<GenericEvent> getComparator()
     {
-        return new Comparator<Event>()
+        return new Comparator<GenericEvent>()
         {
             @Override
-            public int compare(Event lhs, Event rhs)
+            public int compare(GenericEvent lhs, GenericEvent rhs)
             {
                 // Second digits of the each string contained in the events are in order
-                String lhsString = (String) ((GenericEvent) lhs).getObjects()[0];
-                String rhsString = (String) ((GenericEvent) rhs).getObjects()[0];
+                String lhsString = (String) lhs.getObjects()[0];
+                String rhsString = (String) rhs.getObjects()[0];
                 return lhsString.substring(1, 2).compareTo(rhsString.substring(1, 2));
             }
         };
