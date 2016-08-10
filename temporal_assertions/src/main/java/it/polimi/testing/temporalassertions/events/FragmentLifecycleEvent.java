@@ -15,6 +15,20 @@ import static org.hamcrest.Matchers.equalTo;
  */
 public class FragmentLifecycleEvent extends CallbackEvent
 {
+    public final static String ON_ATTACH = "onAttach";
+    public final static String ON_CREATE = "onCreate";
+    public final static String ON_CREATE_VIEW = "onCreateView";
+    public final static String ON_ACTIVITY_CREATED = "onActivityCreated";
+    public final static String ON_START = "onStart";
+    public final static String ON_RESTART = "onRestart";
+    public final static String ON_RESUME = "onResume";
+    public final static String ON_PAUSE = "onPause";
+    public final static String ON_STOP = "onStop";
+    public final static String ON_DESTROY_VIEW = "onDestroyView";
+    public final static String ON_DESTROY = "onDestroy";
+    public final static String ON_DETACH = "onDetach";
+    public final static String ON_SAVE_INSTANCE_STATE = "onSaveInstanceState";
+
     private final Class<? extends Fragment> fragmentClass;
 
     /**

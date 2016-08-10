@@ -20,6 +20,8 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.jayway.awaitility.Awaitility.await;
 import static it.polimi.testing.temporalassertions.core.AllHold.allHold;
 import static it.polimi.testing.temporalassertions.core.Exist.existsAnEventThat;
+import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.ON_PAUSE;
+import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.ON_RESUME;
 import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.isFragmentLifecycleEvent;
 import static junit.framework.Assert.fail;
 
@@ -72,8 +74,8 @@ public class RxExampleActivityTest
         // Add custom checks and observables
         monitor.checkThat("Activity is not paused and resumed during the test!",
                 allHold(
-                        existsAnEventThat(isFragmentLifecycleEvent("onPause")),
-                        existsAnEventThat(isFragmentLifecycleEvent("onResume"))));
+                        existsAnEventThat(isFragmentLifecycleEvent(ON_PAUSE)),
+                        existsAnEventThat(isFragmentLifecycleEvent(ON_RESUME))));
 
         // Start verification here (after both the activity and this test have added their observables/checks)
         monitor.startVerification(null, EventMonitor.getAssertionErrorResultsSubscriber());

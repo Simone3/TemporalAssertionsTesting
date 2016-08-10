@@ -19,6 +19,7 @@ import rx.functions.Func1;
 import static it.polimi.testing.simple_example_app.custom_check.MyDescriptor.myDescriptor;
 import static it.polimi.testing.temporalassertions.core.AnEventThat.anEventThat;
 import static it.polimi.testing.temporalassertions.core.Exist.existsAnEventThat;
+import static it.polimi.testing.temporalassertions.events.ActivityLifecycleEvent.ON_CREATE;
 import static it.polimi.testing.temporalassertions.events.CallbackEvent.isCallbackEvent;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeFrom;
 import static org.hamcrest.core.Is.is;
@@ -40,7 +41,7 @@ public class RxExampleActivity extends AppCompatActivity implements RxExampleFra
 
         // [Uncomment for runtime monitoring] EventMonitor.getInstance().initialize();
 
-        EventMonitor.getInstance().fireCustomEvent(new ActivityLifecycleEvent(RxExampleActivity.class, "onCreate"));
+        EventMonitor.getInstance().fireCustomEvent(new ActivityLifecycleEvent(RxExampleActivity.class, ON_CREATE));
 
         if(findViewById(R.id.fragment_container)!=null)
         {

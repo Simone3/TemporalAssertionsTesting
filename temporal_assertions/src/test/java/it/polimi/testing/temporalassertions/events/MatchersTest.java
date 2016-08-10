@@ -9,6 +9,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import static it.polimi.testing.temporalassertions.events.FragmentLifecycleEvent.ON_CREATE;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeFrom;
 import static it.polimi.testing.temporalassertions.events.TextChangeEvent.isTextChangeWhereTextMatches;
 import static junit.framework.Assert.assertFalse;
@@ -62,25 +63,25 @@ public class MatchersTest
     {
         // Not a real test, just print descriptions of matchers
 
-        System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent(A.class, "asd"));
+        System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent(A.class, ON_CREATE));
         System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent(A.class));
-        System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent("asd"));
+        System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent(ON_CREATE));
         System.out.println(ActivityLifecycleEvent.isActivityLifecycleEvent());
 
-        System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent(F.class, "asd"));
+        System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent(F.class, ON_CREATE));
         System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent(F.class));
-        System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent("asd"));
+        System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent(ON_CREATE));
         System.out.println(FragmentLifecycleEvent.isFragmentLifecycleEvent());
 
-        System.out.println(CallbackEvent.isCallbackEvent("asd"));
+        System.out.println(CallbackEvent.isCallbackEvent(ON_CREATE));
         System.out.println(CallbackEvent.isCallbackEvent());
 
         System.out.println(GenericEvent.isGenericEventWithObjects("0", "1", "2"));
         System.out.println(GenericEvent.isGenericEventWithObjectsThatMatch(anything()));
         System.out.println(GenericEvent.isGenericEvent());
 
-        System.out.println(TextChangeEvent.isTextChange(textView, CoreMatchers.is("asd")));
-        System.out.println(TextChangeEvent.isTextChangeWhereTextMatches(endsWith("asd")));
+        System.out.println(TextChangeEvent.isTextChange(textView, CoreMatchers.is(ON_CREATE)));
+        System.out.println(TextChangeEvent.isTextChangeWhereTextMatches(endsWith(ON_CREATE)));
         System.out.println(TextChangeEvent.isTextChangeFrom(textView));
         System.out.println(TextChangeEvent.isTextChange());
     }
