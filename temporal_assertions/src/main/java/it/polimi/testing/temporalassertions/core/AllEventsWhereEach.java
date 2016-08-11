@@ -192,7 +192,7 @@ public class AllEventsWhereEach<T extends Event> extends AbstractEventDescriptor
 
                 new CheckSubscriber()
                 {
-                    private boolean matchedAtLeastOneEvent = false;
+                    private int matchedEvents = 0;
                     private boolean wrongOrder = false;
                     private T wrongEvent;
                     private T previousEvent = null;
@@ -214,7 +214,7 @@ public class AllEventsWhereEach<T extends Event> extends AbstractEventDescriptor
                         // If we have a match...
                         if(getMatcher().matches(interestingEvent))
                         {
-                            matchedAtLeastOneEvent = true;
+                            matchedEvents++;
 
                             // If the order is wrong, exit
                             if(previousEvent!=null && comparator.compare(previousEvent, interestingEvent)>0)
@@ -238,12 +238,12 @@ public class AllEventsWhereEach<T extends Event> extends AbstractEventDescriptor
                         if(wrongOrder)
                         {
                             outcome = Outcome.FAILURE;
-                            report = "Events "+previousEvent+" and "+wrongEvent+" are not ordered";
+                            report = "Events "+previousEvent+" and "+wrongEvent+" were not ordered";
                         }
-                        else if(matchedAtLeastOneEvent)
+                        else if(matchedEvents>0)
                         {
                             outcome = Outcome.SUCCESS;
-                            report = "All events are in order";
+                            report = "All "+matchedEvents+" events were in order";
                         }
                         else
                         {

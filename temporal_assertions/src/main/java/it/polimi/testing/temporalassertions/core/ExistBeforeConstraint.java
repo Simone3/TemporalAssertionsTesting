@@ -48,7 +48,7 @@ public class ExistBeforeConstraint extends AbstractExistConstraint
 
                     private final AbstractEventDescriptor.State state = new AbstractEventDescriptor.State(COUNTING);
 
-                    private boolean foundAtLeastOneE2 = false;
+                    private int foundE2s = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -62,7 +62,7 @@ public class ExistBeforeConstraint extends AbstractExistConstraint
                         // If we match "eventAfter"...
                         else if(eventAfter.getMatcher().matches(event))
                         {
-                            foundAtLeastOneE2 = true;
+                            foundE2s++;
 
                             // If the precondition is met, exit with success
                             if(quantifier.isConditionMet())
@@ -99,7 +99,7 @@ public class ExistBeforeConstraint extends AbstractExistConstraint
                             // If we are in COUNTING state, warning or failure
                             case COUNTING:
 
-                                if(!foundAtLeastOneE2)
+                                if(foundE2s<=0)
                                 {
                                     outcome = Outcome.WARNING;
                                     report = "No event that "+eventAfter.getMatcher()+" was found in the sequence";
@@ -107,7 +107,7 @@ public class ExistBeforeConstraint extends AbstractExistConstraint
                                 else
                                 {
                                     outcome = Outcome.FAILURE;
-                                    report = "The condition was never verified before any event that "+eventAfter.getMatcher();
+                                    report = "The condition was never verified before any of the "+foundE2s+" events where each "+eventAfter.getMatcher();
                                 }
 
                                 break;

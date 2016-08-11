@@ -49,7 +49,7 @@ public class ExistAfterConstraint extends AbstractExistConstraint
 
                     private final AbstractEventDescriptor.State state = new AbstractEventDescriptor.State(BEFORE);
 
-                    private boolean foundAtLeastOneE2 = false;
+                    private int foundE2s = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -65,7 +65,7 @@ public class ExistAfterConstraint extends AbstractExistConstraint
                                     quantifier.resetCounter();
                                     state.setState(WAITING_FOR_E1s);
                                     state.setEvents(event);
-                                    foundAtLeastOneE2 = true;
+                                    foundE2s++;
                                 }
 
                                 break;
@@ -110,7 +110,6 @@ public class ExistAfterConstraint extends AbstractExistConstraint
                             state.setState(CONDITION_MET);
                         }
 
-
                         Outcome outcome = null;
                         String report = null;
                         switch(state.getState())
@@ -119,7 +118,7 @@ public class ExistAfterConstraint extends AbstractExistConstraint
                             case BEFORE:
                             case WAITING_FOR_E1s:
 
-                                if(!foundAtLeastOneE2)
+                                if(foundE2s<=0)
                                 {
                                     outcome = Outcome.WARNING;
                                     report = "No event that "+eventBefore.getMatcher()+" was found in the sequence";
@@ -127,7 +126,7 @@ public class ExistAfterConstraint extends AbstractExistConstraint
                                 else
                                 {
                                     outcome = Outcome.FAILURE;
-                                    report = "The condition was never verified after any event that "+eventBefore.getMatcher();
+                                    report = "The condition was never verified after any of the "+foundE2s+" events where each "+eventBefore.getMatcher();
                                 }
 
                                 break;

@@ -63,7 +63,7 @@ public class ToastEvent extends Event
      */
     public static Matcher<ToastEvent> isToastDisplay(Matcher<String> textMatcher)
     {
-        return new FeatureMatcher<ToastEvent, String>(is(textMatcher), "is display of toast with text that "+textMatcher, "")
+        return new FeatureMatcher<ToastEvent, String>(is(textMatcher), "is display of toast with text that", "text")
         {
             @Override
             protected String featureValueOf(final ToastEvent actual)

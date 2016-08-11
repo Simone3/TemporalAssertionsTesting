@@ -93,7 +93,7 @@ public class TextChangeEvent extends Event
      */
     public static Matcher<TextChangeEvent> isTextChangeWhereTextMatches(final Matcher<String> matcher)
     {
-        return new FeatureMatcher<TextChangeEvent, String>(matcher, "is a text change event with text that is", "text")
+        return new FeatureMatcher<TextChangeEvent, String>(matcher, "is a text change event with text that", "text")
         {
             @Override
             protected String featureValueOf(final TextChangeEvent actual)

@@ -48,7 +48,7 @@ public class MenuClickEvent extends Event
      */
     public static Matcher<MenuClickEvent> isMenuClick()
     {
-        return new FeatureMatcher<MenuClickEvent, Void>(anything(""), "is click on menu option", "")
+        return new FeatureMatcher<MenuClickEvent, Void>(anything(""), "is click on any menu option", "")
         {
             @Override
             protected Void featureValueOf(final MenuClickEvent actual)
@@ -65,7 +65,7 @@ public class MenuClickEvent extends Event
      */
     public static Matcher<MenuClickEvent> isMenuClick(@IdRes int menuOptionId)
     {
-        return new FeatureMatcher<MenuClickEvent, Integer>(equalTo(menuOptionId), "is click on menu option "+menuOptionId, "")
+        return new FeatureMatcher<MenuClickEvent, Integer>(equalTo(menuOptionId), "is click on menu option", "menu option")
         {
             @Override
             protected Integer featureValueOf(final MenuClickEvent actual)

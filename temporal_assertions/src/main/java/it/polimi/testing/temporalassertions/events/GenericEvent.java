@@ -73,7 +73,7 @@ public class GenericEvent extends Event
      */
     public static Matcher<GenericEvent> isGenericEventWithObjectsThatMatch(final Matcher<Object> matcher)
     {
-        return new FeatureMatcher<GenericEvent, List<Object>>(describedAs("'"+matcher.toString()+"'", everyItem(matcher)), "is a generic event with objects that match", "objects")
+        return new FeatureMatcher<GenericEvent, List<Object>>(describedAs("'"+matcher+"'", everyItem(matcher)), "is a generic event with objects that match", "objects")
         {
             @Override
             protected List<Object> featureValueOf(final GenericEvent actual)

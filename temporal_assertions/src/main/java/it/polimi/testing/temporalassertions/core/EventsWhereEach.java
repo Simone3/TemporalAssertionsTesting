@@ -50,7 +50,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                     private final State state = new State(CORRECT);
 
-                    private boolean foundAtLeastOneE2 = false;
+                    private int foundE2s = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -66,7 +66,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                     quantifier.resetCounter();
                                     state.setState(WAITING_FOR_E1s);
                                     state.setEvents(event);
-                                    foundAtLeastOneE2 = true;
+                                    foundE2s++;
                                 }
 
                                 break;
@@ -83,6 +83,8 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                 // If we match an "eventBefore"...
                                 else if(eventBefore.getMatcher().matches(event))
                                 {
+                                    foundE2s++;
+
                                     // If the condition is met, we restart the count
                                     if(quantifier.isConditionMet())
                                     {
@@ -107,7 +109,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                     public Result getFinalResult()
                     {
                         final Outcome SUCCESS_OUTCOME = Outcome.SUCCESS;
-                        final String SUCCESS_REPORT = "Check verified";
+                        final String SUCCESS_REPORT = "Check verified for each of the "+foundE2s+" events where each "+eventBefore.getMatcher();
 
                         Outcome outcome = null;
                         String report = null;
@@ -116,7 +118,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                             // If we are in CORRECT state, we can have a success or a warning
                             case CORRECT:
 
-                                if(!foundAtLeastOneE2)
+                                if(foundE2s<=0)
                                 {
                                     outcome = Outcome.WARNING;
                                     report = "No event that "+eventBefore.getMatcher()+" was found in the sequence";
@@ -184,7 +186,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                     private final State state = new State(CORRECT);
 
-                    private boolean foundAtLeastOneE2 = false;
+                    private int foundE2s = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -198,7 +200,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                         // If we match "eventAfter"...
                         else if(eventAfter.getMatcher().matches(event))
                         {
-                            foundAtLeastOneE2 = true;
+                            foundE2s++;
 
                             // If the precondition is met, restart count
                             if(quantifier.isConditionMet())
@@ -227,7 +229,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                             // If we are in CORRECT state, warning or success
                             case CORRECT:
 
-                                if(!foundAtLeastOneE2)
+                                if(foundE2s<=0)
                                 {
                                     outcome = Outcome.WARNING;
                                     report = "No event that "+eventAfter.getMatcher()+" was found in the sequence";
@@ -235,7 +237,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                 else
                                 {
                                     outcome = Outcome.SUCCESS;
-                                    report = "Check verified";
+                                    report = "Check verified for each of the "+foundE2s+" events where each "+eventAfter.getMatcher();
                                 }
 
                                 break;
@@ -278,7 +280,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
 
                     private final State state = new State(CORRECT);
 
-                    private boolean foundAtLeastOnePair = false;
+                    private int foundPairs = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -316,7 +318,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                     // If it's both "eventBefore" and "eventAfter"...
                                     if(isBoth)
                                     {
-                                        foundAtLeastOnePair = true;
+                                        foundPairs++;
 
                                         // Simply reset the counter if the condition is met
                                         if(quantifier.isConditionMet())
@@ -337,8 +339,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                     // If we match an "eventAfter" event...
                                     else if(isEventAfter)
                                     {
-
-                                        foundAtLeastOnePair = true;
+                                        foundPairs++;
 
                                         // Go back to CORRECT if the condition is met
                                         if(quantifier.isConditionMet())
@@ -380,7 +381,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                             case CORRECT:
                             case BETWEEN:
 
-                                if(!foundAtLeastOnePair)
+                                if(foundPairs<=0)
                                 {
                                     outcome = Outcome.WARNING;
                                     report = "No pair of events was found in the sequence";
@@ -388,7 +389,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                 else
                                 {
                                     outcome = Outcome.SUCCESS;
-                                    report = "Check verified";
+                                    report = "Check verified for each of the "+foundPairs+" pairs";
                                 }
 
                                 break;

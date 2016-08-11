@@ -54,7 +54,7 @@ public class ExistBetweenConstraint extends AbstractExistConstraint
 
                     private final AbstractEventDescriptor.State state = new AbstractEventDescriptor.State(BEFORE);
 
-                    private boolean atLeastOnePair = false;
+                    private int foundPairs = 0;
 
                     @Override
                     public void onNext(Event event)
@@ -92,7 +92,7 @@ public class ExistBetweenConstraint extends AbstractExistConstraint
                                     // If it's both "eventBefore" and "eventAfter"...
                                     if(isBoth)
                                     {
-                                        atLeastOnePair = true;
+                                        foundPairs++;
 
                                         // Exit with success if the condition is met
                                         if(quantifier.isConditionMet())
@@ -113,7 +113,7 @@ public class ExistBetweenConstraint extends AbstractExistConstraint
                                     // If we get an "eventAfter"...
                                     else if(isEventAfter)
                                     {
-                                        atLeastOnePair = true;
+                                        foundPairs++;
 
                                         // Exit with success if the condition is met
                                         if(quantifier.isConditionMet())
@@ -164,10 +164,10 @@ public class ExistBetweenConstraint extends AbstractExistConstraint
                             case BEFORE:
                             case BETWEEN:
 
-                                if(atLeastOnePair)
+                                if(foundPairs>0)
                                 {
                                     outcome = Outcome.FAILURE;
-                                    report = "The condition was never met between any pair";
+                                    report = "The condition was never met between any of the "+foundPairs+" pairs";
                                 }
                                 else
                                 {
