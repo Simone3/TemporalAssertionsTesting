@@ -145,7 +145,7 @@ public class EventsWhereEach extends AbstractEventDescriptor
                                 else
                                 {
                                     outcome = Outcome.FAILURE;
-                                    report = state.getEvent(0)+" was found but "+quantifier.getCounter()+" events where each "+eventBefore.getMatcher()+" were found afterwards";
+                                    report = state.getEvent(0)+" was found but "+quantifier.getCounter()+" events where each "+getMatcher()+" were found afterwards";
                                 }
 
                                 break;

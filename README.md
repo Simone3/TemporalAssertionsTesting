@@ -5,7 +5,7 @@ Event-Based Testing library for Android, for the second part of my master thesis
 Include:
 
 ```groovy
-<action> 'it.polimi.testing:event-based-testing:1.0'
+<action> 'it.polimi.testing:event-based-testing:1.2'
 ```
 
 Where
